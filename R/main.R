@@ -21,8 +21,8 @@ mcoeffs <- as.vector(ecsi.sempls$outer_loadings[ecsi.sempls$outer_loadings>0])
 
 nobs <- nrow(data)
 
-sresid <- sim_resid(ecsi.plsm$strucmod, nobs)
-mresid <- sim_resid(ecsi.plsm$measuremod, nobs)
+sresid <- sim_resid(ecsi.plsm$strucmod, 300)
+mresid <- sim_resid(ecsi.plsm$measuremod, 300)
 
 
 # test with sempls object

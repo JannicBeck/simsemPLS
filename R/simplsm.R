@@ -56,29 +56,30 @@ simplsm <- function(object, nmonte = 100, nobs = 200, scoeffs = NULL, mcoeffs = 
         # get measurement model
         measuremod <- object$measuremod
         
-        # test if residuals of structural model are supplied 
-        # TODO: simplify this messy code!
+        # test if residuals are supplied 
         if(!(is.null(sresid)) || !(is.null(mresid))){
             
-            # get index of supplied residuals
-            i <- min(which(!(c(is.null(sresid), is.null(mresid)))))
+            # get the supplied object
+            get_object <- function() ifelse(is.null(sresid), return(mresid), return(sresid))
             
-            # get the number of observations from the supplied residuals
-            ifelse(i == 1, nobs <- nrow(sresid), nobs <- nrow(mresid))
+            # get number of observations from the supplied object
+            nobs <- nrow(get_object())
             
-        }
-        
-        # test if residuals of structural model are supplied 
-        if(is.null(sresid)){
+            # get the model of the object which is not supplied
+            get_other <- function() ifelse(is.null(sresid), return(strucmod), return(measuremod))
+
+            # simulate residuals of the object which is not supplied
+            sim.resid <- sim_resid(get_other(), nobs)
             
-            # simulate residuals by rnorm if not supplied
+            # re-assign object which is not supplied
+            ifelse(is.null(sresid), sresid <- sim.resid, mresid <- sim.resid) 
+                
+        }else{
+            
+            # simulate residuals of structural model
             sresid <- sim_resid(strucmod, nobs)
-        }
-        
-        # test if residuals of measurement model are supplied
-        if(is.null(mresid)){
             
-            # simulate residuals by rnorm if not supplied
+            # simulate residuals of measurement model
             mresid <- sim_resid(measuremod, nobs)
         }
         
