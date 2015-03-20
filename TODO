@@ -19,3 +19,4 @@
 #'       test for coeffs length strucmod et measmod etc.
 #'	 vectorize for loops
 #'	 move computations out of loops
+#'	 change from list of sempls objects to bootsempls style object

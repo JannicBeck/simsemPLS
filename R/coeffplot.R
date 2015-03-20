@@ -1,10 +1,7 @@
 CoeffPlot <- function(object, model){
-    
-    # create new plot
-    plot.new()
-    
+     
     # get row names
-    coeff.names <- row.names(object[[1]]$coefficients)
+    coeff.names <- row.names(coefficients(object[[1]]))
     
     # plot box
     plot(seq(-1, 1, by = 0.05), xaxt="n", yaxt="n", las = 1, type="n", 

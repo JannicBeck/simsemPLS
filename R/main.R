@@ -16,8 +16,12 @@ rm("ECSImm", "ECSIsm", "ECSImobi", "mobi")
 ecsi.sempls <- sempls(ecsi.plsm, data)
 
 # input coefficients
-scoeffs <- as.vector(ecsi.sempls$path_coefficients[ecsi.sempls$path_coefficients>0])
-mcoeffs <- as.vector(ecsi.sempls$outer_loadings[ecsi.sempls$outer_loadings>0])
+scoeffs <- as.vector(ecsi.sempls$path_coefficients[ecsi.sempls$path_coefficients != 0])
+mcoeffs <- as.vector(ecsi.sempls$outer_loadings[ecsi.sempls$outer_loadings != 0])
+
+# input coefficients
+scoeffs <- as.vector(ECSIsempls$path_coefficients[ECSIsempls$path_coefficients != 0])
+mcoeffs <- as.vector(ECSIsempls$outer_loadings[ECSIsempls$outer_loadings != 0])
 
 nobs <- nrow(data)
 
@@ -26,20 +30,20 @@ mresid <- sim_resid(ecsi.plsm$measuremod, 300)
 
 
 # test with sempls object
-testsempls <- simsempls(ecsi.sempls, 10)
+testsempls <- simsempls(ecsi.sempls, 100)
 
 # test with plsm object
-testplsm <- simplsm(ecsi.plsm, 10, scoeffs = scoeffs, mcoeffs = mcoeffs)
+testplsm <- simplsm(ecsi.plsm, 100, scoeffs = scoeffs, mcoeffs = mcoeffs)
 
 # test with nobs parameter
-testnobs <- simplsm(ecsi.plsm, 10, nobs = 250, scoeffs = scoeffs, mcoeffs = mcoeffs)
+testnobs <- simplsm(ecsi.plsm, 100, nobs = 250, scoeffs = scoeffs, mcoeffs = mcoeffs)
 
 # test with strucmod residuals
-teststrucresid <- simplsm(ecsi.plsm, 10, scoeffs = scoeffs, mcoeffs = mcoeffs
+teststrucresid <- simplsm(ecsi.plsm, 100, scoeffs = scoeffs, mcoeffs = mcoeffs
                          , sresid = sresid)
 
 # test with measuremod residuals
-testmeasresid <- simplsm(ecsi.plsm, 10, scoeffs = scoeffs, mcoeffs = mcoeffs
+testmeasresid <- simplsm(ecsi.plsm, 100, scoeffs = scoeffs, mcoeffs = mcoeffs
                               , mresid = mresid)
 
 # test different models
@@ -50,6 +54,10 @@ pb.models <- simsempls(PB.model, 100)
 final.models <- simsempls(final.model, 10)
 
 ecsi.models <- simsempls(ecsi.sempls, 100)
+
+min.sempls <- simsempls(ECSIsempls, 100)
+
+min.plsm <- simplsm(ECSIpm, 100, scoeffs = scoeffs, mcoeffs = mcoeffs)
 
 ecsi.boot <- bootsempls(ecsi.sempls, nboot = 100)
 
@@ -62,12 +70,14 @@ CoeffPlot(pb.models, PB.model)
 
 CoeffPlot(final.models, final.model)
 
-CoeffPlot(ecsi.models, ecsi.sempls)
+CoeffPlot(testsempls, ecsi.plsm)
 
-CoeffPlot(ecsi.plsm, testplsm)
+CoeffPlot(testplsm, ecsi.plsm)
 
-CoeffPlot(ecsi.plsm, testnobs)
+CoeffPlot(testnobs, ecsi.plsm)
 
-CoeffPlot(ecsi.plsm, teststrucresid)
+CoeffPlot(teststrucresid, ecsi.plsm)
 
-CoeffPlot(ecsi.plsm, testmeasresid)
+CoeffPlot(min.sempls, ECSIpm)
+
+CoeffPlot(min.plsm, ECSIpm)
