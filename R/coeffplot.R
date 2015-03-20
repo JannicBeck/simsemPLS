@@ -1,22 +1,10 @@
-seiler.models <- MonteSempls(seiler_model, 10)
-
-pb.models <- MonteSempls(PB_model, 100)
-
-final.models <- MonteSempls(final_model, 10)
-
-ecsi.models <- MonteSempls(ecsi_model, 100)
-
-ecsi.boot <- bootsempls(ecsi_model, nboot = 1000)
-
-parallelplot(ecsi.boot, subset = 1:ncol(ecsi.boot$t), reflinesAt = c(-1,0,1))
-
-CoeffPlot <- function(monte.models, model){
+CoeffPlot <- function(object, model){
     
     # create new plot
     plot.new()
     
     # get row names
-    coeff.names <- row.names(monte.models[[1]]$coefficients)
+    coeff.names <- row.names(object[[1]]$coefficients)
     
     # plot box
     plot(seq(-1, 1, by = 0.05), xaxt="n", yaxt="n", las = 1, type="n", 
@@ -31,9 +19,9 @@ CoeffPlot <- function(monte.models, model){
     abline(h = 0, col="red")
     
     # draw simulated coefficients to graph
-    for(i in seq_along(monte.models)){
+    for(i in seq_along(object)){
         
-        points(monte.models[[i]]$coefficients$Estimate, col = "red", pch = 4, cex = 1.2)
+        points(object[[i]]$coefficients$Estimate, col = "red", pch = 4, cex = 1.2)
     }
     
     # draw real coefficients to graph
@@ -41,22 +29,5 @@ CoeffPlot <- function(monte.models, model){
     
 }
 
-CoeffPlot(seiler.models, seiler_model)
 
-CoeffPlot(pb.models, PB_model)
-
-CoeffPlot(final.models, final_model)
-
-CoeffPlot(ecsi.models, ecsi_model)
-
-coefficients <- 0
-
-for(i in seq_along(monte.models)){
-    
-    coefficients[i] <- monte.models[[i]]$coefficients$Estimate[[2]]
-    
-
-}
-
-densityplot(coefficients)
 

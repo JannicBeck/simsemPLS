@@ -11,7 +11,7 @@ split_lm <- function(object, attribute){
     if(attribute == "coefficients"){
         
         # intialize vector of coefficients
-        result <- rep(0, length(object))
+        result <- numeric(length(object))
         
         # extract coefficients from lm object to vector
         for(i in seq_along(object)){

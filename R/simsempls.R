@@ -57,7 +57,8 @@ simsempls <- function(object, nmonte = 100) {
         # scoeffs <- split_lm(strucmod.lm, "coefficients")
         
         # get coefficients from sempls object instead
-        scoeffs <- object$path_coefficients[object$path_coefficients > 0]
+        # TODO: messy code simplify!
+        scoeffs <- object$path_coefficients[object$path_coefficients != 0]
         
         # convert vector of structural coefficients to list 
         scoeffs <- to_list(scoeffs, strucmod)

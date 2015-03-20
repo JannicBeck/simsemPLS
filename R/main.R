@@ -39,5 +39,35 @@ teststrucresid <- simplsm(ecsi.plsm, 10, scoeffs = scoeffs, mcoeffs = mcoeffs
                          , sresid = sresid)
 
 # test with measuremod residuals
-teststrucresid <- simplsm(ecsi.plsm, 10, scoeffs = scoeffs, mcoeffs = mcoeffs
+testmeasresid <- simplsm(ecsi.plsm, 10, scoeffs = scoeffs, mcoeffs = mcoeffs
                               , mresid = mresid)
+
+# test different models
+seiler.models <- simsempls(seiler.model, 10)
+
+pb.models <- simsempls(PB.model, 100)
+
+final.models <- simsempls(final.model, 10)
+
+ecsi.models <- simsempls(ecsi.sempls, 100)
+
+ecsi.boot <- bootsempls(ecsi.sempls, nboot = 100)
+
+# printing models
+parallelplot(ecsi.boot, subset = 1:ncol(ecsi.boot$t), reflinesAt = c(-1,0,1))
+
+CoeffPlot(seiler.models, seiler.model)
+
+CoeffPlot(pb.models, PB.model)
+
+CoeffPlot(final.models, final.model)
+
+CoeffPlot(ecsi.models, ecsi.sempls)
+
+CoeffPlot(ecsi.plsm, testplsm)
+
+CoeffPlot(ecsi.plsm, testnobs)
+
+CoeffPlot(ecsi.plsm, teststrucresid)
+
+CoeffPlot(ecsi.plsm, testmeasresid)
