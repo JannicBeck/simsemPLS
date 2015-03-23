@@ -20,3 +20,6 @@
 #'	 vectorize for loops
 #'	 move computations out of loops
 #'	 change from list of sempls objects to bootsempls style object
+#'	 use matrixpls package
+#'	 try maxit sempls error
+
