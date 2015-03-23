@@ -24,15 +24,36 @@ mcoeffs <- as.vector(ecsi.sempls$outer_loadings[ecsi.sempls$outer_loadings != 0]
 nobs <- nrow(data)
 
 # input residuals
-sresid <- sim_resid(ecsi.plsm$strucmod, 400)
-mresid <- sim_resid(ecsi.plsm$measuremod, 400)
+sresid <- sim_resid(ecsi.plsm$strucmod, 400, rnorm)
+mresid <- sim_resid(ecsi.plsm$measuremod, 400, rnorm)
+
+# non normal residuals
+non_normal <- function(n, mean, sd){
+
+    mean <- 0
+    sd <- 0
+    
+    x = seq(n)
+    y = 10 + 10 *x + 20 * rchisq(n,df=2)
+    y <- scale(y)
+    non_normal_lm = lm(y~x+0) 
+    
+    result <- as.numeric(non_normal_lm$residuals)
+    
+    return(result)
+}
+
+
+# input non normal residuals
+sresid <- sim_resid(ecsi.plsm$strucmod, 400, non_normal)
+mresid <- sim_resid(ecsi.plsm$measuremod, 400, non_normal)
 
 
 # test with sempls object
 testsempls <- simsempls(ecsi.sempls, 1000)
 
 # test with plsm object
-testplsm <- simplsm(ecsi.plsm, 1000, scoeffs = scoeffs, mcoeffs = mcoeffs)
+testplsm <- simplsm(ecsi.plsm, 100, scoeffs = scoeffs, mcoeffs = mcoeffs)
 
 # test with nobs parameter
 testnobs <- simplsm(ecsi.plsm, 1000, nobs = 300, scoeffs = scoeffs, mcoeffs = mcoeffs)
@@ -54,6 +75,10 @@ teststrucresid <- simplsm(ecsi.plsm, 1000, scoeffs = scoeffs, mcoeffs = mcoeffs
 testmeasresid <- simplsm(ecsi.plsm, 1000, scoeffs = scoeffs, mcoeffs = mcoeffs
                               , mresid = mresid)
 
+# test with residuals
+testresid <- simplsm(ecsi.plsm, 100, scoeffs = scoeffs, mcoeffs = mcoeffs
+                         , sresid = sresid, mresid = mresid)
+
 # plot models
 coeff_plot(testsempls, ecsi.plsm)
 coeff_plot(testplsm, ecsi.plsm)
@@ -63,6 +88,7 @@ coeff_plot(testultranobs, ecsi.plsm)
 coeff_plot(testlownobs, ecsi.plsm)
 coeff_plot(teststrucresid, ecsi.plsm)
 coeff_plot(testmeasresid, ecsi.plsm)
+coeff_plot(testresid, ecsi.plsm)
 
 # parallelplot models
 parallelplot.sempls(testsempls, subset = 1:ncol(testsempls$t), reflinesAt = c(-1, 0, 1))
@@ -73,6 +99,7 @@ parallelplot.sempls(testultranobs, subset = 1:ncol(testhighnobs$t), reflinesAt =
 parallelplot.sempls(testlownobs, subset = 1:ncol(testlownobs$t), reflinesAt = c(-1, 0, 1))
 parallelplot.plsm(teststrucresid, subset = 1:ncol(teststrucresid$t), reflinesAt = c(-1, 0, 1))
 parallelplot.sempls(testmeasresid, subset = 1:ncol(testmeasresid$t), reflinesAt = c(-1, 0, 1))
+parallelplot.sempls(testresid, subset = 1:ncol(testresid$t), reflinesAt = c(-1, 0, 1))
 
 
 # test different models

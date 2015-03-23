@@ -69,7 +69,7 @@ simplsm <- function(object, nmonte = 100, nobs = 200, scoeffs = NULL, mcoeffs = 
             get_other <- function() ifelse(is.null(sresid), return(strucmod), return(measuremod))
 
             # simulate residuals of the object which is not supplied
-            sim.resid <- sim_resid(get_other(), nobs)
+            sim.resid <- sim_resid(get_other(), nobs, rnorm)
             
             # re-assign object which is not supplied
             ifelse(is.null(sresid), sresid <- sim.resid, mresid <- sim.resid) 
@@ -77,10 +77,10 @@ simplsm <- function(object, nmonte = 100, nobs = 200, scoeffs = NULL, mcoeffs = 
         }else{
             
             # simulate residuals of structural model
-            sresid <- sim_resid(strucmod, nobs)
+            sresid <- sim_resid(strucmod, nobs, rnorm)
             
             # simulate residuals of measurement model
-            mresid <- sim_resid(measuremod, nobs)
+            mresid <- sim_resid(measuremod, nobs, rnorm)
         }
         
         # convert vector of structural coefficients to list 
