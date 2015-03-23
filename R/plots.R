@@ -1,4 +1,4 @@
-CoeffPlot <- function(object, model){
+coeff_plot <- function(object, model){
     
     # get column names
     coeff.names <- colnames(object$t)
@@ -29,7 +29,7 @@ CoeffPlot <- function(object, model){
 
 
 
-parallelplot.simsempls <- function(object, data, pattern="beta", subset=NULL, reflinesAt,
+parallelplot.sempls <- function(object, data, pattern="beta", subset=NULL, reflinesAt,
                                     col=c("grey", "darkred", "darkred", "black"),
                                     lty=c("solid", "solid", "dashed", "dotted"), ...)
 {
@@ -59,7 +59,7 @@ parallelplot.simsempls <- function(object, data, pattern="beta", subset=NULL, re
 }
 
 
-parallelplot.simplsm <- function(object, data, pattern="beta", subset=NULL, reflinesAt,
+parallelplot.plsm <- function(object, data, pattern="beta", subset=NULL, reflinesAt,
                                    col=c("grey", "darkred", "black"),
                                    lty=c("solid", "dashed", "dotted"), ...)
 {
