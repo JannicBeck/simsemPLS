@@ -59,10 +59,15 @@ min.sempls <- simsempls(ECSIsempls, 100)
 
 min.plsm <- simplsm(ECSIpm, 100, scoeffs = scoeffs, mcoeffs = mcoeffs)
 
+
+# printing coefficients
 ecsi.boot <- bootsempls(ecsi.sempls, nboot = 100)
 
-# printing models
-parallelplot(ecsi.boot, subset = 1:ncol(ecsi.boot$t), reflinesAt = c(-1,0,1))
+ecsi.boot$t <- testsempls$t
+
+
+parallelplot.simsempls(testsempls, subset = 1:ncol(testsempls$t), reflinesAt = c(-1, 0, 1))
+
 
 CoeffPlot(seiler.models, seiler.model)
 

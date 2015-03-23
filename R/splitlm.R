@@ -22,7 +22,7 @@ split_lm <- function(object, attribute){
     }else if(attribute == "residuals"){
         
         # intialize matrix of residuals
-        result <- matrix(NA, length(residuals(object[[1]])), length(object))
+        result <- matrix(numeric(), length(residuals(object[[1]])), length(object))
         
         # extract residuals from lm object to matrix
         for(i in seq_along(object)){

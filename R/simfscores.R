@@ -25,7 +25,7 @@ sim_fscores <- function(latent, strucmod, nobs, scoeffs.list, sresid) {
     colnames(exo.scores) <- exogenous
     
     # initialize endgenous scores
-    endo.scores <- matrix(NA, nobs, length(endogenous))
+    endo.scores <- matrix(numeric(), nobs, length(endogenous))
     
     # set endogenous column names
     colnames(endo.scores) <- endogenous

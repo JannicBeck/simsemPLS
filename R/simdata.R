@@ -16,7 +16,7 @@ sim_data <- function(manifest, measuremod, sim.fscores, nobs,
     indpndt.latent <- measuremod[, 1]
     
     # initialize result dataset
-    result <- matrix(NA, nobs, length(manifest))  
+    result <- matrix(numeric(), nobs, length(manifest))  
     
     # set column names
     colnames(result) <- manifest

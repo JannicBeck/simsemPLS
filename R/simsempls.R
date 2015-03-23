@@ -18,26 +18,29 @@ simsempls <- function(object, nmonte = 100) {
     # check if object is of type sempls
     if(is(object, "sempls")){
         
+        # get plsm model
+        model <- object$model
+        
         # get measurement blocks
-        blocks <- object$model$blocks
+        blocks <- model$blocks
         
         # check if measurement model is specified reflective
         is_reflective(blocks)
             
         # get names of latent variables
-        latent <- object$model$latent
+        latent <- model$latent
         
         # get names of manifest variables
-        manifest <- object$model$manifest
+        manifest <- model$manifest
         
         # get data
         data <- object$data
         
         # get structural model
-        strucmod <- object$model$strucmod 
+        strucmod <- model$strucmod 
         
         # get measurement model
-        measuremod <- object$model$measuremod
+        measuremod <- model$measuremod
         
         # get matrix of estimated factor scores
         fscores <- object$factor_scores  
@@ -79,7 +82,7 @@ simsempls <- function(object, nmonte = 100) {
     }
     
     # simulate data
-    result <- core(object$model, nmonte, nobs, latent, manifest, strucmod, measuremod, 
+    result <- core(object, nmonte, nobs, latent, manifest, strucmod, measuremod, 
                    scoeffs, sresid, mcoeffs, mresid)
     
     return(result)
