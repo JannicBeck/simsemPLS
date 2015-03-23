@@ -14,10 +14,10 @@ core <- function(object, nmonte, nobs, latent, manifest, strucmod, measuremod,
         # get actual coefficients
         t0 <- object$coefficients$Estimate  
         
-        # get paths
+        # set path attribute
         attr(t, "path") <- object$coefficients[, 1]
         
-        # get column names
+        # set column names
         colnames(t) <- rownames(object$coefficients)
         
         # get plsm model
@@ -25,17 +25,35 @@ core <- function(object, nmonte, nobs, latent, manifest, strucmod, measuremod,
         
     }else{
         
+        # get equations
+        equations <- plsm2sem(ecsi.plsm)
+        
+        # set path attribute
+        attr(t, "path") <- c(equations[[1]][, 1], equations[[2]][, 1])
+        
+        # set column names
+        colnames(t) <- c(equations[[1]][, 2], equations[[2]][, 2])
+        
         # object is of type plsm
         model <- object
         
-        # set actual coefficients to 0
-        t0 <- rep(0, neq)
+        # set actual coefficients to NA
+        t0 <- NA
     }
     
     # initialize list of datasets
     data <- vector("list", nmonte)
     
+    cat("Simulate: ")
+    
     for(i in 1:nmonte){
+        
+        # printing out the iteration
+        treil <- paste(rep(" ", floor(log10(nmonte)) - floor(log10(i))), collapse="")
+        ndel <- paste(rep("\b", floor(log10(nmonte)) + 1), collapse="")
+        if(i==1) cat(paste(treil, i, sep=""))
+        if(i!=nmonte) cat(paste(ndel, treil, i, sep=""))
+        else cat(paste(ndel, i, " Done.\n", sep=""))
         
         # solve structural model with simulated exogenous factor scores
         # given coefficients and residuals
@@ -50,7 +68,7 @@ core <- function(object, nmonte, nobs, latent, manifest, strucmod, measuremod,
         data[[i]] <- sim.data
         
         # estimate model with simulated data
-        sim.model <- sempls(model, sim.data, maxit = 100)
+        sim.model <- sempls(model, sim.data, maxit = 1000, verbose = FALSE)
         
         # extract coefficients
         t[i, ] <- sim.model$coefficients[, 2]
