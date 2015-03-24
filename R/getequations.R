@@ -1,4 +1,4 @@
-plsm2sem <- function(model){
+get_equations <- function(model){
 
     blocks <- model$blocks
 

@@ -22,4 +22,4 @@
 #'	 change from list of sempls objects to bootsempls style object
 #'	 use matrixpls package
 #'	 try maxit sempls error
-
+#'	 implement in plsm if LV has 1 MV coeff has to be 1 else error

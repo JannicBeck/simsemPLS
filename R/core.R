@@ -26,7 +26,7 @@ core <- function(object, nmonte, nobs, latent, manifest, strucmod, measuremod,
     }else{
         
         # get equations
-        equations <- plsm2sem(ecsi.plsm)
+        equations <- get_equations(ecsi.plsm)
         
         # set path attribute
         attr(t, "path") <- c(equations[[1]][, 1], equations[[2]][, 1])
@@ -37,8 +37,8 @@ core <- function(object, nmonte, nobs, latent, manifest, strucmod, measuremod,
         # object is of type plsm
         model <- object
         
-        # set actual coefficients to NA
-        t0 <- NA
+        # set actual coefficients to provided
+        t0 <- c(mcoeffs, unlist(scoeffs))
     }
     
     # initialize list of datasets

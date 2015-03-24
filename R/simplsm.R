@@ -1,11 +1,10 @@
 #' Simulate data on given plsm object.
 #' 
-#' The exogenous latent variable scores are simulated, according to 
-#' the normal distribution. 
-#' Coefficients for the structural and measurement model must be supplied.
-#' Residuals of the structural and measurement model can be supplied.
-#' If residuals are not supplied, they are simulated by rnorm with the 
-#' number of observations; the default is 200.
+#' The exogenous latent variable scores are simulated by the function rnorm with mean 0 and standard deviation 1.
+#' Coefficients for the structural and measurement model must be supplied as vectors.
+#' Residuals of the structural and measurement model can be supplied as matrices.
+#' If residuals are not supplied, they are simulated by the function rnorm with mean 0, standard deviation 1 
+#' and the supplied number of observations; the default is 200.
 #' The endogenous latent variable scores and manifest variables (the data) 
 #' are calculated based on their linear equations.
 #' 
@@ -31,11 +30,9 @@ simplsm <- function(object, nmonte = 100, nobs = 200, scoeffs = NULL, mcoeffs = 
     # check if object is of type plsm    
     if(is(object, "plsm")){        
         
-        # test for coefficients
-        # TODO test for size of matrix
-        if(is.null(scoeffs) || is.null(mcoeffs)){
+        if(!(is.numeric(scoeffs)) || !(is.numeric(mcoeffs))){
             
-            stop("Coefficients must be supplied")
+            stop("Coefficients must be supplied as numeric vectors!")
         }
         
         # get measurement blocks
@@ -55,6 +52,24 @@ simplsm <- function(object, nmonte = 100, nobs = 200, scoeffs = NULL, mcoeffs = 
         
         # get measurement model
         measuremod <- object$measuremod
+        
+        # test if structural coefficients are of correct length
+        if(length(scoeffs) > nrow(strucmod)){
+            
+            stop("Oops, you supplied more coefficients than there are equations in your structural model!")
+        }else if(length(scoeffs) < nrow(strucmod)){
+            
+            stop("Oops, you supplied less coefficients than there are equations in your structural model!")
+        }
+        
+        # test if measurement coefficients are of correct length
+        if(length(mcoeffs) > nrow(measuremod)){
+            
+            stop("Oops, you supplied more coefficients than there are equations in your measurement model!")
+        }else if(length(mcoeffs) < nrow(measuremod)){
+            
+            stop("Oops, you supplied less coefficients than there are equations in your measurement model!")
+        }
         
         # test if residuals are supplied 
         if(!(is.null(sresid)) || !(is.null(mresid))){

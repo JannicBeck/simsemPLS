@@ -1,9 +1,7 @@
 #' Simulate data on given sempls object.
 #'  
-#' The exogenous latent variable scores are simulated according to the 
-#' normal distribution.
-#' Residuals, coefficients and number of observations are fixed to the 
-#' values of the sempls object. 
+#' The exogenous latent variable scores are simulated with function rnorm, mean 0 and standard deviation 1.
+#' Residuals, coefficients and number of observations are fixed to the values of the sempls object. 
 #' The endogenous latent variable scores and manifest variables (the data) 
 #' are calculated based on their linear equations.
 #' 

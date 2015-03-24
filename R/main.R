@@ -20,6 +20,26 @@ ecsi.sempls <- sempls(ecsi.plsm, data)
 scoeffs <- as.vector(ecsi.sempls$path_coefficients[ecsi.sempls$path_coefficients != 0])
 mcoeffs <- as.vector(ecsi.sempls$outer_loadings[ecsi.sempls$outer_loadings != 0])
 
+
+# !!!!!!!!!!!! ATTENTION AT SIMULATING COEFFICIENTS RANDOMLY !!!!!!!!!!!!!!
+# f.e. LV has 1 MV -> coeff 1.0 fixed! implement!
+
+# slightly improved coefficients of the model
+scoeffs <- c(0.505, 0.557, 0.510, 0.657, 0.378, 0.264, 0.651, 0.391, 0.625, 0.295, 0.583, 0.171)
+mcoeffs <- c(0.843, 0.701, 0.778, 0.868, 0.844,
+             0.871, 0.787, 0.712,
+             0.903, 0.737, 0.848, 0.869, 0.856, 0.875, 0.879,
+             0.904, 0.938,
+             0.799, 0.846, 0.852,
+             1.000,
+             0.814, 0.719, 0.917)
+
+scoeffs <- sample(seq(-1, 1, by = 0.01), 12)
+mcoeffs <- sample(seq(-1, 1, by = 0.01), 24)
+
+scoeffs <- sqrt(scoeffs^2)
+mcoeffs <- sqrt(mcoeffs^2)
+
 # input number of observations
 nobs <- nrow(data)
 
@@ -50,10 +70,10 @@ mresid <- sim_resid(ecsi.plsm$measuremod, 400, non_normal)
 
 
 # test with sempls object
-testsempls <- simsempls(ecsi.sempls, 1000)
+testsempls <- simsempls(ecsi.sempls, 100)
 
 # test with plsm object
-testplsm <- simplsm(ecsi.plsm, 100, scoeffs = scoeffs, mcoeffs = mcoeffs)
+testplsm <- simplsm(ecsi.plsm, 1, scoeffs = scoeffs, mcoeffs = mcoeffs)
 
 # test with nobs parameter
 testnobs <- simplsm(ecsi.plsm, 1000, nobs = 300, scoeffs = scoeffs, mcoeffs = mcoeffs)
@@ -92,12 +112,12 @@ coeff_plot(testresid, ecsi.plsm)
 
 # parallelplot models
 parallelplot.sempls(testsempls, subset = 1:ncol(testsempls$t), reflinesAt = c(-1, 0, 1))
-parallelplot.plsm(testplsm, subset = 1:ncol(testplsm$t), reflinesAt = c(-1, 0, 1))
+parallelplot.sempls(testplsm, subset = 1:ncol(testplsm$t), reflinesAt = c(-1, 0, 1))
 parallelplot.sempls(testnobs, subset = 1:ncol(testnobs$t), reflinesAt = c(-1, 0, 1))
 parallelplot.sempls(testhighnobs, subset = 1:ncol(testhighnobs$t), reflinesAt = c(-1, 0, 1))
 parallelplot.sempls(testultranobs, subset = 1:ncol(testhighnobs$t), reflinesAt = c(-1, 0, 1))
 parallelplot.sempls(testlownobs, subset = 1:ncol(testlownobs$t), reflinesAt = c(-1, 0, 1))
-parallelplot.plsm(teststrucresid, subset = 1:ncol(teststrucresid$t), reflinesAt = c(-1, 0, 1))
+parallelplot.sempls(teststrucresid, subset = 1:ncol(teststrucresid$t), reflinesAt = c(-1, 0, 1))
 parallelplot.sempls(testmeasresid, subset = 1:ncol(testmeasresid$t), reflinesAt = c(-1, 0, 1))
 parallelplot.sempls(testresid, subset = 1:ncol(testresid$t), reflinesAt = c(-1, 0, 1))
 

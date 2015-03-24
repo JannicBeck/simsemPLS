@@ -14,9 +14,12 @@ coeff_plot <- function(object, model){
     # create grid
     abline(h = seq(-1, 1, by = 0.05), v = seq(coeff.names), col="black", lty="dotted")
     abline(h = 0, col="red")
+
+    # get number of replications
+    nmonte <- object$nmonte
     
     # draw simulated coefficients to graph
-    for(i in seq_along(coeff.names)){
+    for(i in 1:nmonte){
         
         points(object$t[i, ], col = "red", pch = 4, cex = 1.2)
     }
@@ -35,7 +38,7 @@ parallelplot.sempls <- function(object, data, pattern="beta", subset=NULL, refli
 {
     ifelse(is.null(subset), ind <- grep(pattern, colnames(object$t)), ind <- subset)
     
-    p <- length(testplsm$t[1, ])
+    p <- length(object$t[1, ])
     upper <- lower <- rep(0, p)
     
     for (i in 1:p){
@@ -54,36 +57,6 @@ parallelplot.sempls <- function(object, data, pattern="beta", subset=NULL, refli
     }
     else Y <- data.frame(Y, origin=c(rep("1resample", object$nmonte),
                                      "2sample", "3ci", "3ci"))
-    parallelplot(~Y[ind], data=Y, groups=origin,
-                 common.scale=TRUE, col=col, lty=lty, ...)
-}
-
-
-parallelplot.plsm <- function(object, data, pattern="beta", subset=NULL, reflinesAt,
-                                   col=c("grey", "darkred", "black"),
-                                   lty=c("solid", "dashed", "dotted"), ...)
-{
-    ifelse(is.null(subset), ind <- grep(pattern, colnames(object$t)), ind <- subset)
-    
-    p <- length(testplsm$t[1, ])
-    upper <- lower <- rep(0, p)
-    
-    for (i in 1:p){
-        
-        lower[i] <- min(object$t[, i])
-        upper[i] <- max(object$t[, i])
-    }
-    
-    Y <- rbind(object$t, lower, upper, deparse.level=0)
-    if(!missing(reflinesAt)){
-        Y <- rbind(Y, matrix(rep(reflinesAt, each=ncol(object$t)),
-                             nrow=length(reflinesAt), byrow=TRUE))
-        origin <- c(rep("1resample", object$nmonte), "3ci", "3ci",
-                    rep("4reflines", times=length(reflinesAt)))
-        Y <- data.frame(Y, origin)
-    }
-    else Y <- data.frame(Y, origin=c(rep("1resample", object$nmonte),
-                                      "3ci", "3ci"))
     parallelplot(~Y[ind], data=Y, groups=origin,
                  common.scale=TRUE, col=col, lty=lty, ...)
 }
