@@ -19,6 +19,23 @@ rm("ECSImm", "ECSIsm", "ECSImobi", "mobi")
 # estimate model
 ecsi.sempls <- sempls(ecsi.plsm, ecsi.data)
 
+# lavaan syntax:
+ecsi.lavaan      <- " Image =~ 0.743*IMAG1 + 0.601*IMAG2 + 0.578*IMAG3 + 0.768*IMAG4 + 0.744*IMAG5
+                      Expectation =~ 0.771*CUEX1 + 0.687*CUEX2 + 0.612*CUEX3 
+                      Quality =~ 0.803*PERQ1 + 0.637*PERQ2 + 0.784*PERQ3 + 0.769*PERQ4 + 0.756*PERQ5 + 0.775*PERQ6 + 0.779*PERQ7
+                      Value =~ 0.904*PERV1 + 0.938*PERV2 
+                      Satisfaction =~ 0.799*CUSA1 + 0.846*CUSA2 + 0.852*CUSA3
+                      Complaints =~ 1*CUSC0 
+                      Loyalty =~ 0.814*CUSL1 + 0.219*CUSL2 + 0.917*CUSL3
+
+                      Expectation ~ 0.505*Image 
+                      Quality ~ 0.557*Expectation 
+                      Value ~ 0.051*Expectation + 0.557*Quality 
+                      Satisfaction ~ 0.179*Image + 0.064*Expectation + 0.513*Quality + 0.192*Value
+                      Complaints ~ 0.526*Satisfaction 
+                      Loyalty ~ 0.195*Image + 0.483*Satisfaction + 0.071*Complaints
+                    "
+
 # ---- CFA ----
 # lavaan test model
 cfa.mm <- cbind(c("f1", "f1", "f1", "f2", "f2", "f2"),c("y1", "y2", "y3", "y4", "y5", "y6"))
@@ -32,6 +49,12 @@ colnames(cfa.data) <- c("y1", "y2", "y3", "y4", "y5", "y6")
 # create plsm object
 cfa.plsm <- plsm(cfa.data, cfa.sm, cfa.mm)
 
+# lavaan syntax:
+cfa.lavaan       <- " f1 =~ 0.7*y1 + 0.7*y2 + 0.7*y3
+                      f2 =~ 0.7*y4 + 0.7*y5 + 0.7*y6
+
+                      f2 ~ 0.5*f1 "
+
 # ---- Specify Input Parameters -----
 # ---- ECSI ----
 
@@ -43,7 +66,7 @@ ecsi.mcoeffs <- as.vector(ecsi.sempls$outer_loadings[ecsi.sempls$outer_loadings 
 ecsi.fscores <- ecsi.sempls$factor_scores
 ecsi.data <- ecsi.sempls$data
 ecsi.scoeffs <- cor(ecsi.fscores)
-ecsi.mcoeffs <- cor(ecsi.data, ecsi.fscores)
+ecsi.mcoeffs <- ecsi.sempls$outer_loadings
 
 
 # improved coefficients of the model
@@ -116,9 +139,15 @@ test.ecsi.sempls.matrix <- simsempls(ecsi.sempls, 100, "matrixpls.sempls")
 # test with plsm object
 test_plsm(ecsi.plsm, ecsi.scoeffs, ecsi.mcoeffs, ecsi.sresid, ecsi.mresid)
 
+# test with lavaan object
+test.ecsi.lavaan <- simlavaan(ecsi.plsm, ecsi.lavaan, 100, 250, ecsi.scoeffs, ecsi.mcoeffs, "sempls")
+
 # ---- CFA ----
 # test with plsm object
 test_plsm(cfa.plsm, cfa.scoeffs, cfa.mcoeffs, cfa.sresid, cfa.mresid)
+
+# test with lavaan object
+test.cfa.lavaan <- simlavaan(cfa.plsm, cfa.lavaan, 100, 250, cfa.scoeffs, cfa.mcoeffs, "sempls")
 
 # ---- Plotting models ----
 

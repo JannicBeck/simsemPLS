@@ -53,13 +53,9 @@ CFAem <- sempls(CFApm, dat)
 data.entry(ECSImm)
 
 
-# lavaan syntax:
-population.model <- ' f1 =~ 0.7*y1 + 0.7*y2 + 0.7*y3
-                      f2 =~ 0.7*y4 + 0.7*y5 + 0.7*y6
-
-                      f2 ~ 0.5*f1                    '
-
-myData <- simulateData(population.model, sample.nobs=250L, standardized = TRUE)
 
 
-CFAlav <- sempls(CFApm, myData)
+myData <- simulateData(ecsi.lavaan, sample.nobs=250L)
+
+colnames(myData) <- ecsi.plsm$manifest
+ecsi.sempls <- sempls(ecsi.plsm, myData)

@@ -1,6 +1,6 @@
-#' Core function 2, actual simulating is done here.
+#' Core function 3, actual simulating is done here.
 #' 
-core_2 <- function(object, nmonte, nobs, scoeffs, mcoeffs, FUN, ...) { 
+core_3 <- function(object, lavaan.model, nmonte, nobs, scoeffs = scoeffs, mcoeffs = mcoeffs, FUN, ...) { 
     
     # get number of equations
     neq <- length(c(object$strucmod[, 2], object$measuremod[, 2]))
@@ -27,24 +27,9 @@ core_2 <- function(object, nmonte, nobs, scoeffs, mcoeffs, FUN, ...) {
     scoeffs.t0 <- scoeffs * object$D
     scoeffs.t0 <- scoeffs.t0[scoeffs.t0 != 0]
     
-    # TODO: Implement getcoeffs from covariance matrix
     # set actual coefficients to provided
     t0 <- c(mcoeffs, scoeffs.t0)
-    
-    # specify the means of the latent variables
-    smeans <- rep(0, nrow(scoeffs))
-    
-    # specify the means of the latent variables
-    mmeans <- rep(0, length(mcoeffs))
-    
-    sim.data <- matrix(numeric(), nobs, length(mcoeffs))
-    
-    colnames(sim.data) <- object$manifest
-    
-    times <- colSums(object$M)
-    
-    fnames <- rep(names(times), times)
-    
+
     cat("Simulate: ")
     
     for(i in 1:nmonte){
@@ -56,16 +41,11 @@ core_2 <- function(object, nmonte, nobs, scoeffs, mcoeffs, FUN, ...) {
         if(i!=nmonte) cat(paste(ndel, treil, i, sep=""))
         else cat(paste(ndel, i, " Done.\n", sep=""))
         
-
         
-        # randomly simulate the latent variable scores with given covariance matrix
-        # If empirical = FALSE, the correlations will be approx.
-        fscores <- mvrnorm(nobs, Sigma = scoeffs, mu = smeans, empirical = TRUE)
-                
-        for(j in seq_along(mcoeffs)){
-            
-            sim.data[, j] <- sim_data(mcoeffs[j], nobs, fscores[, fnames[j]])
-        }
+        # simulate data
+        sim.data <- simulateData(lavaan.model, sample.nobs=250L)
+        
+        colnames(sim.data) <- object$manifest
         
         # estimate model with simulated data
         try(sim.model <- FUN(object, sim.data, verbose = FALSE, ...), silent = TRUE)

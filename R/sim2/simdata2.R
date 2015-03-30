@@ -1,6 +1,6 @@
 #' Simulate random variable with correlation rho on existing variable fscore.
 #' 
-sim_cor <- function(rho, nobs, fscore){
+sim_data <- function(rho, nobs, fscore){
     
     if(rho == 1){
         

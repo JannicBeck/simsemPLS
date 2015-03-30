@@ -14,7 +14,7 @@
 #' @examples
 #' simplsm(object, nmonte = 10, scoeffs = scoeffs, mcoeffs = mcoeffs, sresid = sresid, mresid = mresid, FUN = sempls)
 #'        
-simplsm <- function(object, nmonte = 100, nobs = 200, scoeffs = NULL, mcoeffs = NULL, sresid = NULL, mresid = NULL, FUN = "sempls") {
+simplsm <- function(object, nmonte = 100, nobs = 200, scoeffs = NULL, mcoeffs = NULL, sresid = NULL, mresid = NULL, FUN = "sempls", ...) {
     
     # check if object is of type plsm    
     if(is(object, "plsm")){        
@@ -115,7 +115,7 @@ simplsm <- function(object, nmonte = 100, nobs = 200, scoeffs = NULL, mcoeffs = 
     
     # simulate data
     result <- core(object, nmonte, nobs, latent, manifest, strucmod, measuremod, 
-                   scoeffs, sresid, mcoeffs, mresid, FUN)
+                   scoeffs, sresid, mcoeffs, mresid, FUN, ...)
     
     return(result)
 }

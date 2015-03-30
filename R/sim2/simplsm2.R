@@ -13,7 +13,7 @@
 #' @examples
 #' simplsm(object, nmonte = 10, scoeffs = scoeffs, mcoeffs = mcoeffs)
 #'        
-simplsm <- function(object, nmonte = 100, nobs = 250, scoeffs = NULL, mcoeffs = NULL, FUN = "sempls") {
+simplsm <- function(object, nmonte = 100, nobs = 250, scoeffs = NULL, mcoeffs = NULL, FUN = "sempls", ...) {
 
     
     # check if object is of type plsm    
@@ -60,7 +60,7 @@ simplsm <- function(object, nmonte = 100, nobs = 250, scoeffs = NULL, mcoeffs = 
         FUN <- sempls
     }
     
-    result <- core_2(object, nmonte, nobs, scoeffs, mcoeffs, FUN)
+    result <- core_2(object, nmonte, nobs, scoeffs, mcoeffs, FUN, ...)
     
     return(result)
 }
