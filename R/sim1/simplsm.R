@@ -1,31 +1,20 @@
 #' Simulate data on given plsm object.
 #' 
-#' The exogenous latent variable scores are simulated by the function rnorm with mean 0 and standard deviation 1.
-#' Coefficients for the structural and measurement model must be supplied as vectors.
-#' Residuals of the structural and measurement model can be supplied as matrices.
-#' If residuals are not supplied, they are simulated by the function rnorm with mean 0, standard deviation 1 
-#' and the supplied number of observations; the default is 200.
-#' The endogenous latent variable scores and manifest variables (the data) 
-#' are calculated based on their linear equations.
-#' 
 #' @param object            : An object of class plsm as returned by the method plsm.
 #' @param nmonte            : The number of monte carlo replications; the default is 100.
 #' @param nobs              : The number of observations; the default is 200.
-#' @param scoeffs           : A vector of coefficients for the structural model.
-#' @param mcoeffs           : A vector of coefficients for the measurement model.
+#' @param scoeffs           : A covariance matrix of the latent variable scores.
+#' @param mcoeffs           : A covariance matrix of the manifest variables.
 #' @param sresid            : A matrix of residuals for the structural model.
 #' @param mresid            : A matrix of residuals for the measurement model.
-#' @return An object of class simplsm.
+#' @param FUN               : Name of function to estimate the plsm object; the default is "sempls".
+#'                            For better performance use: "matrixpls.sempls" from matrixpls package.
+#' 
+#' @return An object of class simsempls.
 #' @examples
-#' simplsm(object, nmonte = 10, scoeffs = scoeffs, mcoeffs = mcoeffs)      
-#' simplsm(object, nmonte = 10, nobs = 300, scoeffs = scoeffs, mcoeffs = mcoeffs) 
-#' simplsm(object, nmonte = 10, scoeffs = scoeffs, mcoeffs = mcoeffs, sresid = sresid)              
-#' simplsm(object, nmonte = 10, scoeffs = scoeffs, mcoeffs = mcoeffs, mresid = mresid)    
-#' simplsm(object, nmonte = 10, scoeffs = scoeffs, mcoeffs = mcoeffs, sresid = sresid, mresid = mresid) 
+#' simplsm(object, nmonte = 10, scoeffs = scoeffs, mcoeffs = mcoeffs, sresid = sresid, mresid = mresid, FUN = sempls)
 #'        
-simplsm <- function(object, nmonte = 100, nobs = 200, scoeffs = NULL, mcoeffs = NULL,
-                      sresid = NULL, mresid = NULL) {
-
+simplsm <- function(object, nmonte = 100, nobs = 200, scoeffs = NULL, mcoeffs = NULL, sresid = NULL, mresid = NULL, FUN = "sempls") {
     
     # check if object is of type plsm    
     if(is(object, "plsm")){        
@@ -107,9 +96,26 @@ simplsm <- function(object, nmonte = 100, nobs = 200, scoeffs = NULL, mcoeffs = 
         stop("The supplied object must be of class plsm")
     }
     
+    if(FUN == "matrixpls.sempls"){
+        
+        if(!(require(matrixpls))){
+            
+            stop("The package 'matrixpls' is required, type: install.packages(matrixpls)")
+        }
+        
+        FUN <- matrixpls.sempls
+    }else{
+        
+        if(!(require(semPLS))){
+            
+            stop("The package 'sempls' is required, type: install.packages(sempls)")
+        }
+        FUN <- sempls
+    }
+    
     # simulate data
     result <- core(object, nmonte, nobs, latent, manifest, strucmod, measuremod, 
-                   scoeffs, sresid, mcoeffs, mresid)
+                   scoeffs, sresid, mcoeffs, mresid, FUN)
     
     return(result)
 }

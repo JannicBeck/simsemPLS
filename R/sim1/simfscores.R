@@ -7,7 +7,7 @@
 #' @return A matrix of simulated factor scores
 #' @examples
 #' sim_fscores(latent, strucmod, nobs, strucmod.lm)
-sim_fscores <- function(latent, strucmod, nobs, scoeffs.list, sresid) { 
+sim_fscores <- function(latent, strucmod, nobs, scoeffs, sresid) { 
     
     # get endogenous latent variable names
     endogenous <- unique(strucmod[, 2])
@@ -20,6 +20,9 @@ sim_fscores <- function(latent, strucmod, nobs, scoeffs.list, sresid) {
     
     # simulate random score for exogenous latent variable(s)
     exo.scores <- matrix(rnorm(nobs * mexo, mean=0, sd=1), nobs, mexo)
+    
+    # scale variable to ensure mean 0, sd = 1
+    exo.scores <- scale(exo.scores)
     
     # set exogenous column names
     colnames(exo.scores) <- exogenous
@@ -49,9 +52,9 @@ sim_fscores <- function(latent, strucmod, nobs, scoeffs.list, sresid) {
         indpnt <- strucmod[dpndnt.index, 1]  
         
         # solve structural model with simulated exogenous scores
-        ifelse(length(scoeffs.list[[i]]) > 1, 
-               result[, j] <- rowSums(t(t(result[, indpnt]) * scoeffs.list[[i]])) + sresid[, i], 
-               result[, j] <- result[, indpnt] * scoeffs.list[[i]] + sresid[, i])
+        ifelse(length(scoeffs[[i]]) > 1, 
+               result[, j] <- rowSums(t(t(result[, indpnt]) * scoeffs[[i]])) + sresid[, i], 
+               result[, j] <- result[, indpnt] * scoeffs[[i]] + sresid[, i])
         
         # increment index by 1
         i <- i + 1

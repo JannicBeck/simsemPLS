@@ -1,7 +1,7 @@
 #' Core function, actual simulating is done here.
 #' 
 core <- function(object, nmonte, nobs, latent, manifest, strucmod, measuremod, 
-                 scoeffs, sresid, mcoeffs, mresid) { 
+                 scoeffs, sresid, mcoeffs, mresid, FUN) { 
     
     # get number of equations
     neq <- length(c(strucmod[, 2], measuremod[, 2]))
@@ -68,7 +68,7 @@ core <- function(object, nmonte, nobs, latent, manifest, strucmod, measuremod,
         data[[i]] <- sim.data
         
         # estimate model with simulated data
-        sim.model <- sempls(model, sim.data, maxit = 1000, verbose = FALSE)
+        try(sim.model <- FUN(model, sim.data, maxit = 1000, verbose = FALSE), silent = TRUE)
         
         # extract coefficients
         t[i, ] <- sim.model$coefficients[, 2]
@@ -76,7 +76,7 @@ core <- function(object, nmonte, nobs, latent, manifest, strucmod, measuremod,
     }
     
     # initialize and assign result list
-    result <- list(t0 = t0, t = t, sresid = sresid, mresid = mresid, nmonte = nmonte, data = data, model = model)
+    result <- list(t0 = t0, t = t, sresid = sresid, mresid = mresid, nobs = nobs, nmonte = nmonte, data = data, model = model)
     
     return(result)
 }

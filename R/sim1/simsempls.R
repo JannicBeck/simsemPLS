@@ -7,11 +7,13 @@
 #' 
 #' @param object            : An object of class sempls as returned by the method sempls.
 #' @param nmonte            : The number of monte carlo replications; the default is 100.
+#' @param FUN               : Function to estimate the plsm object; the default is sempls.
+#'                            For better performance use: matrixpls.sempls from matrixpls package.
 #' @return An object of class simsempls.
 #' @examples
 #' simsempls(object, 100)
 #'       
-simsempls <- function(object, nmonte = 100) {
+simsempls <- function(object, nmonte = 100, FUN = "sempls") {
   
     # check if object is of type sempls
     if(is(object, "sempls")){
@@ -79,9 +81,26 @@ simsempls <- function(object, nmonte = 100) {
         stop("The supplied object must be of class sempls")
     }
     
+    if(FUN == "matrixpls.sempls"){
+        
+        if(!(require(matrixpls))){
+            
+            stop("The package 'matrixpls' is required, type: install.packages(matrixpls)")
+        }
+        
+        FUN <- matrixpls.sempls
+    }else{
+        
+        if(!(require(sempls))){
+            
+            stop("The package 'sempls' is required, type: install.packages(sempls)")
+        }
+        FUN <- sempls
+    }
+    
     # simulate data
     result <- core(object, nmonte, nobs, latent, manifest, strucmod, measuremod, 
-                   scoeffs, sresid, mcoeffs, mresid)
+                   scoeffs, sresid, mcoeffs, mresid,  FUN)
     
     return(result)
 }

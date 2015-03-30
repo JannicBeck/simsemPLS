@@ -24,15 +24,15 @@ mcoeffs <- as.vector(ecsi.sempls$outer_loadings[ecsi.sempls$outer_loadings != 0]
 # !!!!!!!!!!!! ATTENTION AT SIMULATING COEFFICIENTS RANDOMLY !!!!!!!!!!!!!!
 # f.e. LV has 1 MV -> coeff 1.0 fixed! implement!
 
-# slightly improved coefficients of the model
-scoeffs <- c(0.505, 0.557, 0.510, 0.657, 0.378, 0.264, 0.651, 0.391, 0.625, 0.295, 0.583, 0.171)
-mcoeffs <- c(0.843, 0.701, 0.778, 0.868, 0.844,
-             0.871, 0.787, 0.712,
-             0.903, 0.737, 0.848, 0.869, 0.856, 0.875, 0.879,
+# improved coefficients of the model
+scoeffs <- c(0.705, 0.857, 0.710, 0.957, 0.678, 0.564, 0.851, 0.591, 0.825, 0.495, 0.683, 0.371)
+mcoeffs <- c(0.843, 0.901, 0.978, 0.868, 0.844,
+             0.871, 0.987, 0.912,
+             0.903, 0.937, 0.848, 0.869, 0.856, 0.875, 0.879,
              0.904, 0.938,
              0.799, 0.846, 0.852,
              1.000,
-             0.814, 0.719, 0.917)
+             0.814, 0.919, 0.917)
 
 scoeffs <- sample(seq(-1, 1, by = 0.01), 12)
 mcoeffs <- sample(seq(-1, 1, by = 0.01), 24)
@@ -73,26 +73,26 @@ mresid <- sim_resid(ecsi.plsm$measuremod, 400, non_normal)
 testsempls <- simsempls(ecsi.sempls, 100)
 
 # test with plsm object
-testplsm <- simplsm(ecsi.plsm, 1, scoeffs = scoeffs, mcoeffs = mcoeffs)
+testplsm <- simplsm(ecsi.plsm, 100, scoeffs = scoeffs, mcoeffs = mcoeffs)
 
 # test with nobs parameter
-testnobs <- simplsm(ecsi.plsm, 1000, nobs = 300, scoeffs = scoeffs, mcoeffs = mcoeffs)
+testnobs <- simplsm(ecsi.plsm, 100, nobs = 50, scoeffs = scoeffs, mcoeffs = mcoeffs)
 
 # test with many observations
-testhighnobs <- simplsm(ecsi.plsm, 1000, nobs = 1000, scoeffs = scoeffs, mcoeffs = mcoeffs)
+testhighnobs <- simplsm(ecsi.plsm, 100, nobs = 1000, scoeffs = scoeffs, mcoeffs = mcoeffs)
 
 # test with many observations
-testultranobs <- simplsm(ecsi.plsm, 1000, nobs = 10000, scoeffs = scoeffs, mcoeffs = mcoeffs)
+testultranobs <- simplsm(ecsi.plsm, 100, nobs = 10000, scoeffs = scoeffs, mcoeffs = mcoeffs)
 
 # test with few
-testlownobs <- simplsm(ecsi.plsm, 1000, nobs = 10, scoeffs = scoeffs, mcoeffs = mcoeffs)
+testlownobs <- simplsm(ecsi.plsm, 100, nobs = 10, scoeffs = scoeffs, mcoeffs = mcoeffs)
 
 # test with strucmod residuals
-teststrucresid <- simplsm(ecsi.plsm, 1000, scoeffs = scoeffs, mcoeffs = mcoeffs
+teststrucresid <- simplsm(ecsi.plsm, 100, scoeffs = scoeffs, mcoeffs = mcoeffs
                          , sresid = sresid)
 
 # test with measuremod residuals
-testmeasresid <- simplsm(ecsi.plsm, 1000, scoeffs = scoeffs, mcoeffs = mcoeffs
+testmeasresid <- simplsm(ecsi.plsm, 100, scoeffs = scoeffs, mcoeffs = mcoeffs
                               , mresid = mresid)
 
 # test with residuals
