@@ -1,3 +1,6 @@
+# ---- Specify Models ----
+
+# ---- ECSI ----
 # load package
 library("semPLS")
 
@@ -8,25 +11,44 @@ data(ECSImobi)
 ecsi.plsm <- ECSImobi
 
 # rename dataframe
-data <- mobi
+ecsi.data <- mobi
 
 # remove unused objects
 rm("ECSImm", "ECSIsm", "ECSImobi", "mobi")
 
 # estimate model
-ecsi.sempls <- sempls(ecsi.plsm, data)
+ecsi.sempls <- sempls(ecsi.plsm, ecsi.data)
 
-# input coefficients
-scoeffs <- as.vector(ecsi.sempls$path_coefficients[ecsi.sempls$path_coefficients != 0])
-mcoeffs <- as.vector(ecsi.sempls$outer_loadings[ecsi.sempls$outer_loadings != 0])
+# ---- CFA ----
+# lavaan test model
+cfa.mm <- cbind(c("f1", "f1", "f1", "f2", "f2", "f2"),c("y1", "y2", "y3", "y4", "y5", "y6"))
+cfa.sm <- cbind(c("f1"), c("f2"))
 
+# create artificial data, only used for creating plsm object
+cfa.data <- matrix(0, 250, 6)
+cfa.data <- as.data.frame(cfa.data)
+colnames(cfa.data) <- c("y1", "y2", "y3", "y4", "y5", "y6")
 
-# !!!!!!!!!!!! ATTENTION AT SIMULATING COEFFICIENTS RANDOMLY !!!!!!!!!!!!!!
-# f.e. LV has 1 MV -> coeff 1.0 fixed! implement!
+# create plsm object
+cfa.plsm <- plsm(cfa.data, cfa.sm, cfa.mm)
+
+# ---- Specify Input Parameters -----
+# ---- ECSI ----
+
+# input coefficients for sim1
+ecsi.scoeffs <- as.vector(ecsi.sempls$path_coefficients[ecsi.sempls$path_coefficients != 0])
+ecsi.mcoeffs <- as.vector(ecsi.sempls$outer_loadings[ecsi.sempls$outer_loadings != 0])
+
+# input coefficients for sim2
+ecsi.fscores <- ecsi.sempls$factor_scores
+ecsi.data <- ecsi.sempls$data
+ecsi.scoeffs <- cor(ecsi.fscores)
+ecsi.mcoeffs <- cor(ecsi.data, ecsi.fscores)
+
 
 # improved coefficients of the model
-scoeffs <- c(0.705, 0.857, 0.710, 0.957, 0.678, 0.564, 0.851, 0.591, 0.825, 0.495, 0.683, 0.371)
-mcoeffs <- c(0.843, 0.901, 0.978, 0.868, 0.844,
+ecsi.scoeffs <- c(0.705, 0.857, 0.710, 0.957, 0.678, 0.564, 0.851, 0.591, 0.825, 0.495, 0.683, 0.371)
+ecsi.mcoeffs <- c(0.843, 0.901, 0.978, 0.868, 0.844,
              0.871, 0.987, 0.912,
              0.903, 0.937, 0.848, 0.869, 0.856, 0.875, 0.879,
              0.904, 0.938,
@@ -34,20 +56,21 @@ mcoeffs <- c(0.843, 0.901, 0.978, 0.868, 0.844,
              1.000,
              0.814, 0.919, 0.917)
 
-scoeffs <- sample(seq(-1, 1, by = 0.01), 12)
-mcoeffs <- sample(seq(-1, 1, by = 0.01), 24)
+# !!!!!!!!!!!! ATTENTION AT SIMULATING COEFFICIENTS RANDOMLY !!!!!!!!!!!!!!
+# f.e. LV has 1 MV -> coeff 1.0 fixed! implement!
+# simulate random coefficients
+ecsi.scoeffs <- sample(seq(-1, 1, by = 0.01), 12)
+ecsi.mcoeffs <- sample(seq(-1, 1, by = 0.01), 24)
 
-scoeffs <- sqrt(scoeffs^2)
-mcoeffs <- sqrt(mcoeffs^2)
-
-# input number of observations
-nobs <- nrow(data)
+# ensure only positive coefficients
+ecsi.scoeffs <- sqrt(ecsi.scoeffs^2)
+ecsi.mcoeffs <- sqrt(ecsi.mcoeffs^2)
 
 # input residuals
-sresid <- sim_resid(ecsi.plsm$strucmod, 400, rnorm)
-mresid <- sim_resid(ecsi.plsm$measuremod, 400, rnorm)
+ecsi.sresid <- sim_resid(ecsi.plsm$strucmod, 400, rnorm)
+ecsi.mresid <- sim_resid(ecsi.plsm$measuremod, 400, rnorm)
 
-# non normal residuals
+# simulate non normal residuals
 non_normal <- function(n, mean, sd){
 
     mean <- 0
@@ -65,88 +88,94 @@ non_normal <- function(n, mean, sd){
 
 
 # input non normal residuals
-sresid <- sim_resid(ecsi.plsm$strucmod, 400, non_normal)
-mresid <- sim_resid(ecsi.plsm$measuremod, 400, non_normal)
+ecsi.sresid <- sim_resid(ecsi.plsm$strucmod, 400, non_normal)
+ecsi.mresid <- sim_resid(ecsi.plsm$measuremod, 400, non_normal)
 
+# ---- CFA ----
+# input coefficients for sim1
+cfa.scoeffs <- 0.5
+cfa.mcoeffs <- c(0.7, 0.7, 0.7, 0.7, 0.7, 0.7)
 
+# input coefficients for sim2
+cfa.scoeffs <- cfa.plsm$D; data.entry(cfa.scoeffs)
+cfa.mcoeffs <- cfa.plsm$M; data.entry(cfa.mcoeffs)
+
+# input residuals
+cfa.sresid <- sim_resid(cfa.plsm$strucmod, 400, rnorm)
+cfa.mresid <- sim_resid(cfa.plsm$measuremod, 400, rnorm)
+
+# ---- Estimate Models ----
+
+# ---- ECSI ----
 # test with sempls object
-testsempls <- simsempls(ecsi.sempls, 100)
+test.ecsi.sempls <- simsempls(ecsi.sempls, 100)
+
+# test with sempls object and matrixpls
+test.ecsi.sempls.matrix <- simsempls(ecsi.sempls, 100, "matrixpls.sempls")
 
 # test with plsm object
-testplsm <- simplsm(ecsi.plsm, 100, scoeffs = scoeffs, mcoeffs = mcoeffs)
+test_plsm(ecsi.plsm, ecsi.scoeffs, ecsi.mcoeffs, ecsi.sresid, ecsi.mresid)
 
-# test with nobs parameter
-testnobs <- simplsm(ecsi.plsm, 100, nobs = 50, scoeffs = scoeffs, mcoeffs = mcoeffs)
+# ---- CFA ----
+# test with plsm object
+test_plsm(cfa.plsm, cfa.scoeffs, cfa.mcoeffs, cfa.sresid, cfa.mresid)
 
-# test with many observations
-testhighnobs <- simplsm(ecsi.plsm, 100, nobs = 1000, scoeffs = scoeffs, mcoeffs = mcoeffs)
+# ---- Plotting models ----
 
-# test with many observations
-testultranobs <- simplsm(ecsi.plsm, 100, nobs = 10000, scoeffs = scoeffs, mcoeffs = mcoeffs)
+# ---- coefficient plots ----
+# ---- ECSI ----
+coeff_plot(test.ecsi.sempls)
+coeff_plot(test.ecsi.sempls.matrix)
+coeff_plot(test.ecsi.plsm)
+coeff_plot(test.ecsi.plsm.matrix)
+coeff_plot(test.ecsi.plsm.matrix.nmonte)
+coeff_plot(test.ecsi.plsm.matrix.nmonte.high)
+coeff_plot(test.ecsi.plsm.nobs)
+coeff_plot(test.ecsi.plsm.nobs.low)
+coeff_plot(test.ecsi.plsm.nobs.high)
+coeff_plot(test.ecsi.plsm.nobs.ultra)
+coeff_plot(test.ecsi.plsm.mresid)
+coeff_plot(test.ecsi.plsm.sresid)
+coeff_plot(test.ecsi.plsm.resid)
 
-# test with few
-testlownobs <- simplsm(ecsi.plsm, 100, nobs = 10, scoeffs = scoeffs, mcoeffs = mcoeffs)
+# ---- CFA ----
+coeff_plot(test.cfa.plsm)
+coeff_plot(test.cfa.plsm.matrix)
+coeff_plot(test.cfa.plsm.matrix.nmonte)
+coeff_plot(test.cfa.plsm.matrix.nmonte.high)
+coeff_plot(test.cfa.plsm.nobs)
+coeff_plot(test.cfa.plsm.nobs.low)
+coeff_plot(test.cfa.plsm.nobs.high)
+coeff_plot(test.cfa.plsm.nobs.ultra)
+coeff_plot(test.cfa.plsm.mresid)
+coeff_plot(test.cfa.plsm.sresid)
+coeff_plot(test.cfa.plsm.resid)
 
-# test with strucmod residuals
-teststrucresid <- simplsm(ecsi.plsm, 100, scoeffs = scoeffs, mcoeffs = mcoeffs
-                         , sresid = sresid)
+# ---- parallel plots ----
+# ---- ECSI ----
+parallelplot.simsempls(test.ecsi.sempls, subset = 1:ncol(test.ecsi.sempls$t), reflinesAt = c(-1, 0, 1))
+parallelplot.simsempls(test.ecsi.sempls.matrix, subset = 1:ncol(test.ecsi.sempls.matrix$t), reflinesAt = c(-1, 0, 1))
+parallelplot.simsempls(test.ecsi.plsm, subset = 1:ncol(test.ecsi.plsm$t), reflinesAt = c(-1, 0, 1))
+parallelplot.simsempls(test.ecsi.plsm.matrix, subset = 1:ncol(test.ecsi.plsm.matrix$t), reflinesAt = c(-1, 0, 1))
+parallelplot.simsempls(test.ecsi.plsm.matrix.nmonte, subset = 1:ncol(test.ecsi.plsm.matrix.nmonte$t), reflinesAt = c(-1, 0, 1))
+parallelplot.simsempls(test.ecsi.plsm.matrix.nmonte.high, subset = 1:ncol(test.ecsi.plsm.matrix.nmonte.high$t), reflinesAt = c(-1, 0, 1))
+parallelplot.simsempls(test.ecsi.plsm.nobs, subset = 1:ncol(test.ecsi.plsm.nobs$t), reflinesAt = c(-1, 0, 1))
+parallelplot.simsempls(test.ecsi.plsm.nobs.low, subset = 1:ncol(test.ecsi.plsm.nobs.low$t), reflinesAt = c(-1, 0, 1))
+parallelplot.simsempls(test.ecsi.plsm.nobs.high, subset = 1:ncol(test.ecsi.plsm.nobs.high$t), reflinesAt = c(-1, 0, 1))
+parallelplot.simsempls(test.ecsi.plsm.nobs.ultra, subset = 1:ncol(test.ecsi.plsm.nobs.ultra$t), reflinesAt = c(-1, 0, 1))
+parallelplot.simsempls(test.ecsi.plsm.mresid, subset = 1:ncol(test.ecsi.plsm.mresid$t), reflinesAt = c(-1, 0, 1))
+parallelplot.simsempls(test.ecsi.plsm.sresid, subset = 1:ncol(test.ecsi.plsm.sresid$t), reflinesAt = c(-1, 0, 1))
+parallelplot.simsempls(test.ecsi.plsm.resid, subset = 1:ncol(test.ecsi.plsm.resid$t), reflinesAt = c(-1, 0, 1))
 
-# test with measuremod residuals
-testmeasresid <- simplsm(ecsi.plsm, 100, scoeffs = scoeffs, mcoeffs = mcoeffs
-                              , mresid = mresid)
-
-# test with residuals
-testresid <- simplsm(ecsi.plsm, 100, scoeffs = scoeffs, mcoeffs = mcoeffs
-                         , sresid = sresid, mresid = mresid)
-
-# plot models
-coeff_plot(testsempls, ecsi.plsm)
-coeff_plot(testplsm, ecsi.plsm)
-coeff_plot(testnobs, ecsi.plsm)
-coeff_plot(testhighnobs, ecsi.plsm)
-coeff_plot(testultranobs, ecsi.plsm)
-coeff_plot(testlownobs, ecsi.plsm)
-coeff_plot(teststrucresid, ecsi.plsm)
-coeff_plot(testmeasresid, ecsi.plsm)
-coeff_plot(testresid, ecsi.plsm)
-
-# parallelplot models
-parallelplot.sempls(testsempls, subset = 1:ncol(testsempls$t), reflinesAt = c(-1, 0, 1))
-parallelplot.sempls(testplsm, subset = 1:ncol(testplsm$t), reflinesAt = c(-1, 0, 1))
-parallelplot.sempls(testnobs, subset = 1:ncol(testnobs$t), reflinesAt = c(-1, 0, 1))
-parallelplot.sempls(testhighnobs, subset = 1:ncol(testhighnobs$t), reflinesAt = c(-1, 0, 1))
-parallelplot.sempls(testultranobs, subset = 1:ncol(testhighnobs$t), reflinesAt = c(-1, 0, 1))
-parallelplot.sempls(testlownobs, subset = 1:ncol(testlownobs$t), reflinesAt = c(-1, 0, 1))
-parallelplot.sempls(teststrucresid, subset = 1:ncol(teststrucresid$t), reflinesAt = c(-1, 0, 1))
-parallelplot.sempls(testmeasresid, subset = 1:ncol(testmeasresid$t), reflinesAt = c(-1, 0, 1))
-parallelplot.sempls(testresid, subset = 1:ncol(testresid$t), reflinesAt = c(-1, 0, 1))
-
-
-# test different models
-# input coefficients
-scoeffs <- as.vector(ECSIsempls$path_coefficients[ECSIsempls$path_coefficients != 0])
-mcoeffs <- as.vector(ECSIsempls$outer_loadings[ECSIsempls$outer_loadings != 0])
-
-seiler.models <- simsempls(seiler.model, 10)
-
-pb.models <- simsempls(PB.model, 100)
-
-final.models <- simsempls(final.model, 10)
-
-ecsi.models <- simsempls(ecsi.sempls, 100)
-
-min.sempls <- simsempls(ECSIsempls, 100)
-
-min.plsm <- simplsm(ECSIpm, 100, scoeffs = scoeffs, mcoeffs = mcoeffs)
-
-
-coeff_plot(seiler.models, seiler.model)
-
-coeff_plot(pb.models, PB.model)
-
-coeff_plot(final.models, final.model)
-
-coeff_plot(min.sempls, ECSIpm)
-
-coeff_plot(min.plsm, ECSIpm)
-
+# ---- CFA ----
+parallelplot.simsempls(test.cfa.plsm, subset = 1:ncol(test.cfa.plsm$t), reflinesAt = c(-1, 0, 1))
+parallelplot.simsempls(test.cfa.plsm.matrix, subset = 1:ncol(test.cfa.plsm.matrix$t), reflinesAt = c(-1, 0, 1))
+parallelplot.simsempls(test.cfa.plsm.matrix.nmonte, subset = 1:ncol(test.cfa.plsm.matrix.nmonte$t), reflinesAt = c(-1, 0, 1))
+parallelplot.simsempls(test.cfa.plsm.matrix.nmonte.high, subset = 1:ncol(test.cfa.plsm.matrix.nmonte.high$t), reflinesAt = c(-1, 0, 1))
+parallelplot.simsempls(test.cfa.plsm.nobs, subset = 1:ncol(test.cfa.plsm.nobs$t), reflinesAt = c(-1, 0, 1))
+parallelplot.simsempls(test.cfa.plsm.nobs.low, subset = 1:ncol(test.cfa.plsm.nobs.low$t), reflinesAt = c(-1, 0, 1))
+parallelplot.simsempls(test.cfa.plsm.nobs.high, subset = 1:ncol(test.cfa.plsm.nobs.high$t), reflinesAt = c(-1, 0, 1))
+parallelplot.simsempls(test.cfa.plsm.nobs.ultra, subset = 1:ncol(test.cfa.plsm.nobs.ultra$t), reflinesAt = c(-1, 0, 1))
+parallelplot.simsempls(test.cfa.plsm.mresid, subset = 1:ncol(test.cfa.plsm.mresid$t), reflinesAt = c(-1, 0, 1))
+parallelplot.simsempls(test.cfa.plsm.sresid, subset = 1:ncol(test.cfa.plsm.sresid$t), reflinesAt = c(-1, 0, 1))
+parallelplot.simsempls(test.cfa.plsm.resid, subset = 1:ncol(test.cfa.plsm.resid$t), reflinesAt = c(-1, 0, 1))
