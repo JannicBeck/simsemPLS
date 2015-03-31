@@ -10,11 +10,6 @@ test_plsm <- function(object, scoeffs, mcoeffs, sresid, mresid, FUN){
            simplsm(object, 100, scoeffs = scoeffs, mcoeffs = mcoeffs, FUN = "matrixpls.sempls"),
            envir = .GlobalEnv)
     
-    # test with plsm object, matrixpls and parameter inheritance
-    assign(paste("test.",substitute(object),".matrix.inheritance", sep = ""), 
-           simplsm(object, 100, scoeffs = scoeffs, mcoeffs = mcoeffs, FUN = "matrixpls.sempls", wscheme = "factorial"),
-           envir = .GlobalEnv)
-    
     # test with plsm object, matrixpls and high nmonte
     assign(paste("test.",substitute(object),".matrix.nmonte", sep = ""), 
            simplsm(object, 250, scoeffs = scoeffs, mcoeffs = mcoeffs, FUN = "matrixpls.sempls"),
@@ -32,7 +27,7 @@ test_plsm <- function(object, scoeffs, mcoeffs, sresid, mresid, FUN){
     
     # test with few observations
     assign(paste("test.",substitute(object),".nobs.low", sep = ""), 
-           simplsm(object, 100, nobs = 10, scoeffs = scoeffs, mcoeffs = mcoeffs, FUN = "matrixpls.sempls"),
+           simplsm(object, 100, nobs = 10, scoeffs = scoeffs, mcoeffs = mcoeffs, FUN = "matrixpls.sempls", maxit = 1000),
            envir = .GlobalEnv)
     
     # test with high observations

@@ -68,27 +68,6 @@ ecsi.data <- ecsi.sempls$data
 ecsi.scoeffs <- cor(ecsi.fscores)
 ecsi.mcoeffs <- ecsi.sempls$outer_loadings
 
-
-# improved coefficients of the model
-ecsi.scoeffs <- c(0.705, 0.857, 0.710, 0.957, 0.678, 0.564, 0.851, 0.591, 0.825, 0.495, 0.683, 0.371)
-ecsi.mcoeffs <- c(0.843, 0.901, 0.978, 0.868, 0.844,
-             0.871, 0.987, 0.912,
-             0.903, 0.937, 0.848, 0.869, 0.856, 0.875, 0.879,
-             0.904, 0.938,
-             0.799, 0.846, 0.852,
-             1.000,
-             0.814, 0.919, 0.917)
-
-# !!!!!!!!!!!! ATTENTION AT SIMULATING COEFFICIENTS RANDOMLY !!!!!!!!!!!!!!
-# f.e. LV has 1 MV -> coeff 1.0 fixed! implement!
-# simulate random coefficients
-ecsi.scoeffs <- sample(seq(-1, 1, by = 0.01), 12)
-ecsi.mcoeffs <- sample(seq(-1, 1, by = 0.01), 24)
-
-# ensure only positive coefficients
-ecsi.scoeffs <- sqrt(ecsi.scoeffs^2)
-ecsi.mcoeffs <- sqrt(ecsi.mcoeffs^2)
-
 # input residuals
 ecsi.sresid <- sim_resid(ecsi.plsm$strucmod, 400, rnorm)
 ecsi.mresid <- sim_resid(ecsi.plsm$measuremod, 400, rnorm)
@@ -140,14 +119,16 @@ test.ecsi.sempls.matrix <- simsempls(ecsi.sempls, 100, "matrixpls.sempls")
 test_plsm(ecsi.plsm, ecsi.scoeffs, ecsi.mcoeffs, ecsi.sresid, ecsi.mresid)
 
 # test with lavaan object
-test.ecsi.lavaan <- simlavaan(ecsi.plsm, ecsi.lavaan, 100, 250, ecsi.scoeffs, ecsi.mcoeffs, "sempls")
+lavaan.model <- ecsi.lavaan
+test_plsm(ecsi.plsm, ecsi.scoeffs, ecsi.mcoeffs, ecsi.sresid, ecsi.mresid)
 
 # ---- CFA ----
 # test with plsm object
 test_plsm(cfa.plsm, cfa.scoeffs, cfa.mcoeffs, cfa.sresid, cfa.mresid)
 
 # test with lavaan object
-test.cfa.lavaan <- simlavaan(cfa.plsm, cfa.lavaan, 100, 250, cfa.scoeffs, cfa.mcoeffs, "sempls")
+lavaan.model <- cfa.lavaan
+test_plsm(cfa.plsm, cfa.scoeffs, cfa.mcoeffs, cfa.sresid, cfa.mresid)
 
 # ---- Plotting models ----
 
@@ -208,3 +189,4 @@ parallelplot.simsempls(test.cfa.plsm.nobs.ultra, subset = 1:ncol(test.cfa.plsm.n
 parallelplot.simsempls(test.cfa.plsm.mresid, subset = 1:ncol(test.cfa.plsm.mresid$t), reflinesAt = c(-1, 0, 1))
 parallelplot.simsempls(test.cfa.plsm.sresid, subset = 1:ncol(test.cfa.plsm.sresid$t), reflinesAt = c(-1, 0, 1))
 parallelplot.simsempls(test.cfa.plsm.resid, subset = 1:ncol(test.cfa.plsm.resid$t), reflinesAt = c(-1, 0, 1))
+

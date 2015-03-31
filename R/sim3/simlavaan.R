@@ -7,7 +7,7 @@
 #' @examples
 #' simlavaan(object, lavaan.model, nmonte = 100, nobs = 250, FUN = "sempls")
 #'        
-simlavaan <- function(object, lavaan.model, nmonte = 100, nobs = 250, scoeffs = NULL, mcoeffs = NULL, FUN = "sempls", ...) {
+simplsm <- function(object, nmonte = 100, nobs = 250, scoeffs = NULL, mcoeffs = NULL, FUN = "sempls", ...) {
     
     # require simsem package
     if(!(require(simsem))){
