@@ -24,8 +24,12 @@ core_2 <- function(object, nmonte, nobs, scoeffs, mcoeffs, FUN, ...) {
     mcoeffs <- mcoeffs[mcoeffs != 0]
     
     # get structural coefficients vector
+    # old method
     scoeffs.t0 <- scoeffs * object$D
     scoeffs.t0 <- scoeffs.t0[scoeffs.t0 != 0]
+    
+    # new method not working
+    # scoeffs.t0 <- scoeffs[scoeffs != 0]
     
     # TODO: Implement getcoeffs from covariance matrix
     # set actual coefficients to provided
@@ -60,11 +64,12 @@ core_2 <- function(object, nmonte, nobs, scoeffs, mcoeffs, FUN, ...) {
         
         # randomly simulate the latent variable scores with given covariance matrix
         # If empirical = FALSE, the correlations will be approx.
-        fscores <- mvrnorm(nobs, Sigma = scoeffs, mu = smeans, empirical = TRUE)
+        fscores <- mvrnorm(nobs, Sigma = scoeffs, mu = smeans, empirical = FALSE)
                 
         for(j in seq_along(mcoeffs)){
             
-            sim.data[, j] <- sim_data(mcoeffs[j], nobs, fscores[, fnames[j]])
+            # population
+            sim.data[, j] <- sim_data_pop(mcoeffs[j], nobs, fscores[, fnames[j]])
         }
         
         # estimate model with simulated data

@@ -65,13 +65,15 @@ core <- function(object, nmonte, nobs, latent, manifest, strucmod, measuremod,
                              mcoeffs, mresid)
         
         # save simulated data in list
-        data[[i]] <- sim.data
+        data[[i]] <- cbind(sim.data, sim.fscores)
         
         # estimate model with simulated data
         try(sim.model <- FUN(model, sim.data, verbose = FALSE, ...), silent = TRUE)
         
         # extract coefficients
         t[i, ] <- sim.model$coefficients[, 2]
+        
+        # extract rSquared
         
     }
     
