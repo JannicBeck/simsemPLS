@@ -106,14 +106,6 @@ jb.mcoeffs <- jb.plsm$M; data.entry(jb.mcoeffs)
 # sat     0.695 1.000   0.507
 # loyalty 0.213 0.507   1.000
 
-
-
-# ---- Estimate Models ----
-
-# ---- ECSI ----
-test_plsm(ecsi.plsm, ecsi.scoeffs, ecsi.mcoeffs)
-rm("test.ecsi.plsm", "test.ecsi.plsm.nmonte.high", "test.ecsi.plsm.nobs.low", "test.ecsi.plsm.nobs.high", "test.ecsi.plsm.nobs.ultra")
-
 # cheat method
 scoeffs.t0 <- as.vector(ecsi.sempls$path_coefficients[ecsi.sempls$path_coefficients != 0])
 mcoeffs.t0 <- as.vector(ecsi.sempls$outer_loadings[ecsi.sempls$outer_loadings != 0])
@@ -123,6 +115,13 @@ test.ecsi.plsm.nobs.low$t0 <- c(mcoeffs.t0, scoeffs.t0)
 test.ecsi.plsm.nobs.high$t0 <- c(mcoeffs.t0, scoeffs.t0)
 test.ecsi.plsm.nobs.ultra$t0 <- c(mcoeffs.t0, scoeffs.t0)
 
+head(test.ecsi.plsm$data[[1]])
+
+# ---- Estimate Models ----
+
+# ---- ECSI ----
+test_plsm(ecsi.plsm, ecsi.scoeffs, ecsi.mcoeffs)
+rm("test.ecsi.plsm", "test.ecsi.plsm.nmonte.high", "test.ecsi.plsm.nobs.low", "test.ecsi.plsm.nobs.high", "test.ecsi.plsm.nobs.ultra")
 
 # ---- CFA ----
 test_plsm(cfa.plsm, cfa.scoeffs, cfa.mcoeffs)

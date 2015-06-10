@@ -120,6 +120,7 @@ simplsm <- function(object, nmonte = 100, nobs = 200, scoeffs = NULL, mcoeffs = 
     return(result)
 }
 
+
 #' Core function, actual simulating is done here.
 #' 
 core <- function(object, nmonte, nobs, latent, manifest, strucmod, measuremod, 
@@ -202,7 +203,6 @@ core <- function(object, nmonte, nobs, latent, manifest, strucmod, measuremod,
     
     return(result)
 }
-
 
 #' Simulate a dataset on given factor scores, loadings and residuals.
 #' 
