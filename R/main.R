@@ -13,13 +13,28 @@ rownames(empirical.sig) <- colnames(empirical.sig)
 mm <- cbind(c("y1", "y1", "y2", "y2", "y3", "y3", "y3"),
             c("x1", "x2", "x3", "x4", "x5", "x6", "x7"))
 
+# ---- sample model ----
+empirical.sig <- rbind(c(1.0, 0.5, 0.2, 0.2, 0.2),
+                       c(0.5, 1.0, 0.2, 0.2, 0.2),
+                       c(0.2, 0.2, 1.0, 0.23125, 0.34375),
+                       c(0.2, 0.2, 0.23125, 1.0, 0.45625),
+                       c(0.2, 0.2, 0.34375, 0.45625, 1.0))
+
+colnames(empirical.sig) <- c("x1", "x2", "x3", "x4", "x5")
+rownames(empirical.sig) <- colnames(empirical.sig)
+
+mm <- cbind(c("y1", "y1", "y2", "y2", "y2"),
+            c("x1", "x2", "x3", "x4", "x5"))
+
 if(!(require("MASS"))){
     
     stop("The package 'MASS' is required, type: install.packages(\"MASS\")")
 }
 
+sm <- cbind(c("y2"), c("y1"))
+
 # construct dataset with normally distributed variables mean 0 and variance 1
-X <- mvrnorm(100, rep(0, ncol(empirical.sig)), empirical.sig, empirical = FALSE)
+X <- mvrnorm(100, rep(0, ncol(empirical.sig)), empirical.sig, empirical = TRUE)
 
 # sample covariance matrix
 sample.sig <- cor(X)

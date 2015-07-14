@@ -23,3 +23,6 @@ retrieve_outer_coefficients <- function(outer_loadings, mm){
     answers <- as.data.frame(nleqslv(startx,fun))  # answers["x"] = x,y,z are the solutions closest to startx if there are multiple solutions
 
 }
+
+
+
