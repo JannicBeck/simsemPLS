@@ -13,6 +13,9 @@ rownames(empirical.sig) <- colnames(empirical.sig)
 mm <- cbind(c("y1", "y1", "y2", "y2", "y3", "y3", "y3"),
             c("x1", "x2", "x3", "x4", "x5", "x6", "x7"))
 
+# structural (inner) model
+sm <- cbind(c("y2", "y3"), c("y1", "y1"))
+
 # ---- sample model ----
 empirical.sig <- rbind(c(1.0, 0.5, 0.2, 0.2, 0.2),
                        c(0.5, 1.0, 0.2, 0.2, 0.2),
@@ -26,12 +29,14 @@ rownames(empirical.sig) <- colnames(empirical.sig)
 mm <- cbind(c("y1", "y1", "y2", "y2", "y2"),
             c("x1", "x2", "x3", "x4", "x5"))
 
+sm <- cbind(c("y1"), c("y2"))
+
+
 if(!(require("MASS"))){
     
     stop("The package 'MASS' is required, type: install.packages(\"MASS\")")
 }
 
-sm <- cbind(c("y2"), c("y1"))
 
 # construct dataset with normally distributed variables mean 0 and variance 1
 X <- mvrnorm(100, rep(0, ncol(empirical.sig)), empirical.sig, empirical = TRUE)
@@ -51,8 +56,11 @@ sample.outer_loadings <- estimate_outer_loadings(sample.sig, mm)
 # retrieve path coefficients for sample sig
 # sample.path_coefficients <- estimate_path_coefficients(sample.sig, sm)
     
-# structural (inner) model
-sm <- cbind(c("y2", "y3"), c("y1", "y1"))
+cor(y1,y2)
+cor(y1,y3)
+cor(y2,y3)
+
+(cor(y1,y2)-cor(y1,y3)*cor(y2,y3))/1-cor(y2,y3)^2
 
 library("semPLS")
 
