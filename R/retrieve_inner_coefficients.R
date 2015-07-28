@@ -17,6 +17,7 @@ retrieve_inner_coefficients <- function(path_coefficients, sm){
     
 }
 
+
 fun <- function(x) { 
     f <- numeric(length(x))                                 
     f[1] <-  ((((x[1]+x[2]+x[3]+x[4]+x[5]+x[6])/(sqrt(3)*sqrt(5.0625)))-
@@ -103,3 +104,24 @@ cor(y2,y3)
 
 (r12-r13*r23)/(1-r23^2)
 (r13-r12*r23)/(1-r23^2)
+
+
+fun <- function(x) { 
+    f <- numeric(length(x))                                 
+    f[1] <-  ((x[1]-x[2]*0.1)/(1-0.1^2))-0.3
+    f[2] <-  ((x[2]-x[1]*0.1)/(1-0.1^2))-0.2
+    f 
+} 
+startx <- rep(0,2) # start the answer search here
+answers <- as.data.frame(nleqslv(startx,fun))  # answers["x"] = x,y,z are the solutions closest to startx if there are multiple solutions
+
+
+
+
+
+
+
+
+
+
+

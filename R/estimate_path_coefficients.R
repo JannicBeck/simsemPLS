@@ -1,6 +1,6 @@
 estimate_path_coefficients <- function(sig, sm, mm){
     
-    all correlations between manifest variables of latent variables
+    # all correlations between manifest variables of latent variables
     
     for(1:nrow(sm)){
         

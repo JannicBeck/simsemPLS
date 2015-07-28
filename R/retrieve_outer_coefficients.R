@@ -14,14 +14,34 @@ retrieve_outer_coefficients <- function(outer_loadings, mm){
     
     fun <- function(x) { 
         f <- numeric(length(x))             		            # read as:
-        f[1] <-  (1+x[1]+x[2])/sqrt(3+2*(x[1]+x[2]+x[3]))-0.8	# 0 = 2z - 2y + 3x + 4
-        f[2] <-  (1+x[1]+x[3])/sqrt(3+2*(x[1]+x[2]+x[3]))-0.75	# 0 = 3z + 4y - 3x + 3
-        f[3] <-  (1+x[2]+x[3])/sqrt(3+2*(x[1]+x[2]+x[3]))-0.7	# 0 = -z + 2y + 5x + 1
+        f[1] <-  (1+x[1]+x[2])/sqrt(3+2*(x[1]+x[2]+x[3]))-0.7	# 0 = 2z - 2y + 3x + 4
+        f[2] <-  (1+x[1]+x[3])/sqrt(3+2*(x[1]+x[2]+x[3]))-0.65	# 0 = 3z + 4y - 3x + 3
+        f[3] <-  (1+x[2]+x[3])/sqrt(3+2*(x[1]+x[2]+x[3]))-0.6	# 0 = -z + 2y + 5x + 1
         f 
     } 
     startx <- c(0,0,0) # start the answer search here
     answers <- as.data.frame(nleqslv(startx,fun))  # answers["x"] = x,y,z are the solutions closest to startx if there are multiple solutions
 
+    
+    fun <- function(x) { 
+        f <- numeric(length(x))                 	            # read as:
+        f[1] <-  (1+x[1])/sqrt(2+2*(x[1]))-0.8	# 0 = 2z - 2y + 3x + 4
+        f 
+    } 
+    startx <- c(0) # start the answer search here
+    answers <- as.data.frame(nleqslv(startx,fun))  # answers["x"] = x,y,z are the solutions closest to startx if there are multiple solutions
+ 
+    
+    fun <- function(x) { 
+        f <- numeric(length(x))                 	            # read as:
+        f[1] <-  (0.7+x[1]*0.65+x[2]*0.6)/sqrt(0.7^2+0.65^2+0.6^2+2*(0.7*0.65*x[1]+0.7*0.6*x[2]+0.65*0.6*x[3]))-0.7	
+        f[2] <-  (0.65+x[1]*0.7+x[3]*0.6)/sqrt(0.7^2+0.65^2+0.6^2+2*(0.7*0.65*x[1]+0.7*0.6*x[2]+0.65*0.6*x[3]))-0.65    
+        f[3] <-  (0.6+x[2]*0.7+x[3]*0.65)/sqrt(0.7^2+0.65^2+0.6^2+2*(0.7*0.65*x[1]+0.7*0.6*x[2]+0.65*0.6*x[3]))-0.6    
+        f 
+    } 
+    startx <- c(0,0,0) # start the answer search here
+    answers <- as.data.frame(nleqslv(startx,fun))  # answers["x"] = x,y,z are the solutions closest to startx if there are multiple solutions
+    
 }
 
 

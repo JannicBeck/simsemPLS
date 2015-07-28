@@ -1,0 +1,19 @@
+digraph "estim.model" {
+  rankdir=LR;
+  size="8,8";
+  node [fontname="Helvetica" fontsize=14 shape=box];
+  edge [fontname="Helvetica" fontsize=10];
+  center=1;
+  "y2" [shape=ellipse]
+  "y3" [shape=ellipse]
+  "y1" [shape=ellipse]
+ "y2" -> "x3" [label="lam_1_1=0.7"];
+  "y2" -> "x4" [label="lam_1_2=0.75"];
+  "y2" -> "x5" [label="lam_1_3=0.8"];
+  "y3" -> "x6" [label="lam_2_1=0.8"];
+  "y3" -> "x7" [label="lam_2_2=0.8"];
+  "y1" -> "x1" [label="lam_3_1=0.866025"];
+  "y1" -> "x2" [label="lam_3_2=0.866025"];
+  "y2" -> "y1" [label="beta_1_3=0.238157"];
+  "y3" -> "y1" [label="beta_2_3=0.209289"];
+}

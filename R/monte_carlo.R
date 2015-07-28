@@ -1,4 +1,4 @@
-monte_carlo <- function(nmonte, nobs, FUN, empirical.sig, model){
+monte_carlo <- function(nmonte, nobs, FUN, empirical.sig, model, coefficients){
     
     if(FUN == "semPLS"){
         
@@ -19,9 +19,24 @@ monte_carlo <- function(nmonte, nobs, FUN, empirical.sig, model){
         stop("The package 'MASS' is required, type: install.packages(\"MASS\")")
     }
     
-    result <- list(matrix(numeric(0), nmonte, ncol(empirical.sig)), matrix(numeric(0), nmonte, ncol(empirical.sig)))
+    eq <- c(get_equations(model)[[1]][, "lam"], get_equations(model)[[2]][, "beta"])
+    
+    neq <- sum(c(as.numeric(model$M),as.numeric(model$D)))
+    
+    t <- matrix(numeric(0), nmonte, neq)
+    
+    t0 <- coefficients
+    
+    colnames(t) <- eq
     
     for(i in 1:nmonte){
+        
+        # printing out the iteration
+        treil <- paste(rep(" ", floor(log10(nmonte)) - floor(log10(i))), collapse="")
+        ndel <- paste(rep("\b", floor(log10(nmonte)) + 1), collapse="")
+        if(i==1) cat(paste(treil, i, sep=""))
+        if(i!=nmonte) cat(paste(ndel, treil, i, sep=""))
+        else cat(paste(ndel, i, " Done.\n", sep=""))
         
         # construct dataset with normally distributed variables mean 0 and variance 1
         X <- mvrnorm(nobs, rep(0, ncol(empirical.sig)), empirical.sig, empirical = FALSE)
@@ -29,22 +44,16 @@ monte_carlo <- function(nmonte, nobs, FUN, empirical.sig, model){
         # sample covariance matrix
         sample.sig <- cor(X)
         
-        # retrieve outer loadings for sample sig
-        sample.outer_loadings <- estimate_outer_loadings(sample.sig, model$measuremod)
-        
         # specify dataset
         dataset <- as.data.frame(X)
         
-        estim.model <- sempls(model, dataset, maxit = 100)
+        try(estim.model <- sempls(model, dataset, maxit = 100, verbose = FALSE), silent = TRUE)
         
-        pls.outer_loadings <- as.vector(estim.model$outer_loadings[estim.model$outer_loadings!=0])
-        sample.outer_loadings <- as.vector(sample.outer_loadings[sample.outer_loadings!=0])
-        
-        result[[1]][i, ] <- pls.outer_loadings
-        result[[2]][i, ] <- sample.outer_loadings
+        t[i, ] <- estim.model$coefficients$Estimate
     }
     
-    return(result)
+    result <- list(t0 = t0, t = t, nobs = nobs, nmonte = nmonte, model = model)
+    
 }
     
     
