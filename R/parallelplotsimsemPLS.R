@@ -1,3 +1,4 @@
+#TODO require semPLS package for parallelplot function
 parallelplot.simsemPLS <- function(object, data, pattern="beta", subset=NULL, reflinesAt,
                                     col=c("grey", "darkred", "darkred", "black"),
                                     lty=c("solid", "solid", "dashed", "dotted"), ...)

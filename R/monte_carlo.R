@@ -1,33 +1,51 @@
-monte_carlo <- function(nmonte, nobs, FUN, empirical.sig, model, coefficients){
+monte_carlo <- function(nmonte = 100, nobs = 1000, sigma, model, coeffs, FUNPLS = sempls, FUNSIM = mvrnorm, ...){
     
-    if(FUN == "semPLS"){
+    if(!(is.function(FUNPLS))){
+        
+        stop("Parameter FUNPLS must be set to sempls or matrixpls.sempls")
+    }
+    
+    if(!(is.function(FUNSIM))){
+        
+        stop("Parameter FUNSIM must be set to mvrnorm or rvnfast")
+    }
+    
+    
+    if(identical(FUNPLS, sempls)){
         
         if(!(require("semPLS"))){
             
-            stop("The package 'semPLS' is required, type: install.packages(\"semPLS\")")
+            stop("The package 'semPLS' is required, type: install.packages('semPLS')")
         }
-    }else{
+    }else if(identical(FUNPLS, matrixpls.sempls)){
         
         if(!(require("matrixpls"))){
             
-            stop("The package 'matrixpls' is required, type: install.packages(\"matrixpls\")")
+            stop("The package 'matrixpls' is required, type: install.packages('matrixpls')")
         }    
     }
     
-    if(!(require("MASS"))){
+    if(identical(FUNSIM, mvrnorm)){
         
-        stop("The package 'MASS' is required, type: install.packages(\"MASS\")")
+        if(!(require("MASS"))){
+            
+            stop("The package 'MASS' is required, type: install.packages('MASS')")
+        }
+    }else if(identical(FUNSIM, rmvn)){
+        
+        if(!(require("mvnfast"))){
+            
+            stop("The package 'mvnfast' is required, type: install.packages('mvnfast')")
+        }    
     }
+    
     
     eq <- c(get_equations(model)[[1]][, "lam"], get_equations(model)[[2]][, "beta"])
     
-    neq <- sum(c(as.numeric(model$M),as.numeric(model$D)))
-    
-    t <- matrix(numeric(0), nmonte, neq)
-    
-    t0 <- coefficients
-    
+    t <- matrix(numeric(0), nmonte, length(eq))
     colnames(t) <- eq
+    
+    t0 <- coeffs
     
     for(i in 1:nmonte){
         
@@ -39,15 +57,10 @@ monte_carlo <- function(nmonte, nobs, FUN, empirical.sig, model, coefficients){
         else cat(paste(ndel, i, " Done.\n", sep=""))
         
         # construct dataset with normally distributed variables mean 0 and variance 1
-        X <- mvrnorm(nobs, rep(0, ncol(empirical.sig)), empirical.sig, empirical = FALSE)
-        
-        # sample covariance matrix
-        sample.sig <- cor(X)
-        
-        # specify dataset
-        dataset <- as.data.frame(X)
-        
-        try(estim.model <- sempls(model, dataset, maxit = 100, verbose = FALSE), silent = TRUE)
+        X <- as.data.frame(FUNSIM(nobs, rep(0, ncol(sigma)), sigma, ...))
+        colnames(X) <- colnames(sigma)
+
+        try(estim.model <- FUNPLS(model, X, verbose = FALSE, ...), silent = TRUE)
         
         t[i, ] <- estim.model$coefficients$Estimate
     }
