@@ -248,19 +248,6 @@ parallelplot.simsemPLS(nico.fixc.hib.hil, subset = 1:ncol(nico.fixc.hib.hil$t), 
 parallelplot.simsemPLS(nico.hib, subset = 1:ncol(nico.hib$t), reflinesAt = c(-1, 0, 1))
 parallelplot.simsemPLS(nico.hib.w, subset = 1:ncol(nico.hib.w$t), reflinesAt = c(-1, 0, 1))
 
-library("ggplot2")
-library("reshape2")
-
-# split to submodels
-mm1 <- melt(nico.hib.w$t[, -(4:9)])
-mm2 <- melt(nico.hib.w$t[, -c((1:3),(6:9))])
-mm3 <- melt(nico.hib.w$t[, -c((1:5),(8:9))])
-sm <- melt(nico.hib.w$t[, -(1:7)])
-
-ggplot(aes(x=value, colour=Var2), data=mm1) + geom_density()
-ggplot(aes(x=value, colour=Var2), data=mm2) + geom_density()
-ggplot(aes(x=value, colour=Var2), data=mm3) + geom_density()
-ggplot(aes(x=value, colour=Var2), data=sm) + geom_density()
 
 
 library("Rgraphviz")
