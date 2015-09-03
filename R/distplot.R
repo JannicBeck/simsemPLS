@@ -18,9 +18,17 @@ dist_plot <- function(object){
     
     for(lv in latent.vars){
         
+        
         lv.lam <- get_equations(model)[[1]][, "lam"][which(mm == lv)]
         lv.lam.melt <- melt(object$t[, lv.lam])
-        print(ggplot(aes(x=value, colour=Var2), data=lv.lam.melt) + geom_density())
+        
+        if(length(lv.lam) == 1){
+            print(ggplot(aes(x=value, colour=lv.lam), data=lv.lam.melt) + geom_density())
+        }else{
+            print(ggplot(aes(x=value, colour=Var2), data=lv.lam.melt) + geom_density())
+        }
+        
+        
     }
 
     beta <- get_equations(model)[[2]][, "beta"]

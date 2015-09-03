@@ -4,15 +4,15 @@ coeff_plot <- function(object){
     coeff.names <- colnames(object$t)
     
     # plot box
-    plot(seq(-1, 1, by = 0.05), xaxt="n", yaxt="n", las = 1, type="n", 
+    plot(seq(-1, 1, by = 0.1), xaxt="n", yaxt="n", las = 1, type="n", 
          xlim = c(1,length(coeff.names)), xlab = "", ylab = "Estimate")
     
     # name axis
     axis(1, at = seq(coeff.names), labels = coeff.names, las = 2)
-    axis(2, at = seq(-1, 1, by = 0.05), las = 1)
+    axis(2, at = seq(-1, 1, by = 0.1), las = 1)
     
     # create grid
-    abline(h = seq(-1, 1, by = 0.05), v = seq(coeff.names), col="black", lty="dotted")
+    abline(h = seq(-1, 1, by = 0.1), v = seq(coeff.names), col="black", lty="dotted")
     abline(h = 0, col="red")
     
     # get number of replications

@@ -1,4 +1,4 @@
-core <- function(mm, lam, sm, beta){
+core <- function(mm, lam, sm, beta, siglist = NULL){
     
     if(!(require("nleqslv"))){
         
@@ -31,14 +31,13 @@ core <- function(mm, lam, sm, beta){
         lv.lam <- lam[which(mm[,2] %in% lv.manifest)]
         
         if(length(lv.manifest) == 1){
-              
-            # if there is only one manifest variable there is no change to sigma
-            break
+
+            manifest.cor <- 1
             
         }else if(length(lv.manifest) == 2){
             
             # check if lam are equal
-            if(lam[1] != lam[2]){
+            if(lv.lam[1] != lv.lam[2]){
                 
                 stop("lambda coefficients have to be equal in case of only 2 manifest variables")
             }
@@ -50,6 +49,8 @@ core <- function(mm, lam, sm, beta){
             } 
             
             startx <- 0
+            
+            manifest.cor <- nleqslv(startx, fun)[[1]] 
             
         }else if(length(lv.manifest) == 3){
             
@@ -63,6 +64,9 @@ core <- function(mm, lam, sm, beta){
             
             startx <- rep(0, 3)
             
+            # get the correlations
+            manifest.cor <- nleqslv(startx, fun)[[1]] 
+            
         }else if(length(lv.manifest) == 4){
             
             fun <- function(x) { 
@@ -73,16 +77,21 @@ core <- function(mm, lam, sm, beta){
                 f[4] <-  (1+x[3]+coeffs[1]+coeffs[2])/sqrt(4+2*(x[1]+x[2]+x[3]+x[4]+coeffs[1]+coeffs[2]))-lv.lam[4]
                 f
             } 
+            
             startx <- rep(0, 4)
+            
+            # get the correlations
+            manifest.cor <- nleqslv(startx, fun)[[1]] 
             
         }else{
             
-            stop("not implemented yet")
+            if(is.null(siglist)){
+                
+                stop("siglist has to be supplied")
+            }
+            manifest.cor <- as.vector(siglist[[lv]][upper.tri(siglist[[lv]])])
+            
         }
-        
-
-        # get the correlations
-        manifest.cor <- nleqslv(startx, fun)[[1]] 
         
         # get the covariance submatrix of the manifest variables of lv
         lv.sig <- sigma[lv.manifest, lv.manifest]
