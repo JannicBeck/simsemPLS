@@ -1,3 +1,6 @@
+# example for a function, which has to be implemented
+# gives the correlations based on specified regression weights
+
 # desired beta coefficients
 beta <- c(0.268, 0.448, 0.171)
 

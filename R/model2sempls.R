@@ -5,7 +5,7 @@ model2sempls <- function(nobs, sigma, sm, mm){
     
     X <- as.data.frame(mvrnorm(nobs, rep(0, ncol(sigma)), sigma, empirical = TRUE))
     model <- plsm(X, sm, mm)
-    result <- sempls(model, X)
+    result <- sempls(model, X, maxit = 1000)
     
     return(result)
 }
